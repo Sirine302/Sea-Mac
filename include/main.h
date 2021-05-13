@@ -20,7 +20,7 @@ public:
 	// constructeur par defaut
 	CVector3() {}
 
-	// initialisation des données quand on crée une instance
+	// initialisation des donnï¿½es quand on crï¿½e une instance
 	CVector3(float X, float Y, float Z) 
 	{ 
 		x = X; y = Y; z = Z;
@@ -60,12 +60,12 @@ public:
 #define SCREEN_DEPTH 16									// 16 bits par pixel
 
 extern bool  g_bFullScreen;								// plein ecran par defaut
-extern HWND  g_hWnd;									// données relatives a la fenetre
-extern RECT  g_rRect;									// données relatives a la fenetre
+extern HWND  g_hWnd;									// donnï¿½es relatives a la fenetre
+extern RECT  g_rRect;									// donnï¿½es relatives a la fenetre
 extern HDC   g_hDC;										
 extern HGLRC g_hRC;										
-extern HINSTANCE g_hInstance;							// données relatives a la fenetre
-extern float g_DT;										// stock le tps ecoulé entre la frame actuelle et l'ancienne
+extern HINSTANCE g_hInstance;							// donnï¿½es relatives a la fenetre
+extern float g_DT;										// stock le tps ecoulï¿½ entre la frame actuelle et l'ancienne
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, int ishow);
@@ -79,13 +79,13 @@ WPARAM MainLoop();
 // mode plein ecran
 void ChangeToFullScreen();
 
-// données relatives a la fenetre
+// donnï¿½es relatives a la fenetre
 HWND CreateMyWindow(LPSTR strWindowName, int width, int height, DWORD dwStyle, bool bFullScreen, HINSTANCE hInstance);
 
-// données relatives a la fenetre
+// donnï¿½es relatives a la fenetre
 bool bSetupPixelFormat(HDC hdc);
 
-// données relatives a la fenetre
+// donnï¿½es relatives a la fenetre
 void SizeOpenGLScreen(int width, int height);
 
 // openGl
@@ -94,7 +94,7 @@ void InitializeOpenGL(int width, int height);
 // init de l'app
 void Init(HWND hWnd);
 
-// dessine tout à l'ecran
+// dessine tout ï¿½ l'ecran
 void RenderScene();
 
 // libere la memoire pour l'app

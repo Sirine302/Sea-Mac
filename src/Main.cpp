@@ -6,15 +6,15 @@
 #include "camera.h"										
 
 bool  g_bFullScreen = true;								// mode plein ecran par defaut
-HWND  g_hWnd;											// données en rapport avec la fenetre
-RECT  g_rRect;											// données en rapport avec la fenetre
+HWND  g_hWnd;											// donnï¿½es en rapport avec la fenetre
+RECT  g_rRect;											// donnï¿½es en rapport avec la fenetre
 HDC   g_hDC;											
 HGLRC g_hRC;											
 HINSTANCE g_hInstance;									
 float g_DT;												
 
 
-// tableau qui va contenir les donnéess de la height map (fichier .raw qui va stocké des valeurs entre 0 et 255.
+// tableau qui va contenir les donnï¿½ess de la height map (fichier .raw qui va stockï¿½ des valeurs entre 0 et 255.
 // 0 est le plus petit point et 255 le plus haut
 BYTE g_HeightMap[MAP_SIZE*MAP_SIZE];					
 
@@ -28,15 +28,15 @@ CCamera g_Camera;
 // initialisation de l'app
 void Init(HWND hWnd)
 {
-	g_hWnd = hWnd;										// données en rapport avec la fenetre
-	GetClientRect(g_hWnd, &g_rRect);					// données en rapport avec la fenetre
-	InitializeOpenGL(g_rRect.right, g_rRect.bottom);	// données en rapport avec la fenetre
+	g_hWnd = hWnd;										// donnï¿½es en rapport avec la fenetre
+	GetClientRect(g_hWnd, &g_rRect);					// donnï¿½es en rapport avec la fenetre
+	InitializeOpenGL(g_rRect.right, g_rRect.bottom);	// donnï¿½es en rapport avec la fenetre
 
 	
-	// on lit le fichier height map (fichier .raw) et on met les données dans le tab g_HeightMap
+	// on lit le fichier height map (fichier .raw) et on met les donnï¿½es dans le tab g_HeightMap
 	LoadRawFile("Terrain.raw", MAP_SIZE * MAP_SIZE, g_HeightMap);	
 
-	// on donne un pont de vision de départ pour la camera
+	// on donne un pont de vision de dï¿½part pour la camera
 	g_Camera.PositionCamera(1200, 300, 1150,  1199, 300, 1150,  0, 1, 0);
 
 }
@@ -55,7 +55,7 @@ bool AnimateNextFrame(int desiredFrameRate)
 	elapsedTime += deltaTime; 
 	lastTime = currentTime; // maj de lastTime
 
-	// verification qu'on a les fps souhaités
+	// verification qu'on a les fps souhaitï¿½s
 	if( elapsedTime > desiredFPS )
 	{
 		g_DT = desiredFPS; 
@@ -83,9 +83,9 @@ WPARAM MainLoop()
 		}
 		else											
 		{ 		
-			if(AnimateNextFrame(60))					// on fait en sorte d'animé 60 fps
+			if(AnimateNextFrame(60))					// on fait en sorte d'animï¿½ 60 fps
 			{
-				g_Camera.Update();							// maj des données de la camera
+				g_Camera.Update();							// maj des donnï¿½es de la camera
 				RenderScene();							
 			}
 			else
@@ -95,12 +95,12 @@ WPARAM MainLoop()
 		} 
 	}
 
-	DeInit();											//on nettoie la memoire allouée
+	DeInit();											//on nettoie la memoire allouï¿½e
 
 	return(msg.wParam);									
 }
 
-// rendu de la scène entiere
+// rendu de la scï¿½ne entiere
 void RenderScene() 
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// on nettoie l'ecran

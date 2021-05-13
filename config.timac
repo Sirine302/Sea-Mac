@@ -1,0 +1,12 @@
+heightmap.ppm
+255 255 0 255
+10 50 100 
+
+=== LEGENDE === 
+xmax:255
+ymax:255
+zmin:0
+zmax:255
+zNear:10
+zFar:50
+fov:100
