@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/* récupération du fichier de configuration .timac" */ 
+
 typedef struct Config {
     char* config[20];
     int xsize;
@@ -13,3 +15,4 @@ typedef struct Config {
 }Config;
 
 Config * createConfig(char *config);
+

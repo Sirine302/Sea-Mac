@@ -2,13 +2,17 @@
 #define _MAIN_H
 #define _CRT_SECURE_NO_DEPRECATE
 
-#include <windows.h>
+// #include <windows.h>
+// #include <gl\gl.h>				
+// #include <gl\glu.h>										
+
+#include <SDL2/SDL.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <gl\gl.h>				
-#include <gl\glu.h>										
-#include <math.h>							
-
+#include <math.h>
 
 #include "Terrain.h"						
 							

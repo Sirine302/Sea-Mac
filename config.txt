@@ -1,0 +1,14 @@
+{
+	heightMap:nomdufichier.ext
+
+	xSize:10
+	ySize:10
+
+	zMin: 0
+	zMax: 255
+
+	zNear:10
+	zFar:50
+
+	fov:100
+}
