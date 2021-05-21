@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "config.h"
+#include "../include/config.h"
 
 Config * createConfig(char *config){
     Config *maConfig = (Config *)malloc(sizeof(Config));
