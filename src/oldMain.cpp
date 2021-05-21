@@ -24,7 +24,6 @@ bool  g_bRenderMode = true;
 // camera globale
 CCamera g_Camera;
 
-
 // initialisation de l'app
 void Init(HWND hWnd)
 {
