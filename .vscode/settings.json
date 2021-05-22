@@ -4,6 +4,8 @@
         "stdio.h": "c",
         "math.h": "c",
         "iostream": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "ostream": "cpp",
+        "fstream": "cpp"
     }
 }

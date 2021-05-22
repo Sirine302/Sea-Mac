@@ -176,89 +176,78 @@ bool pgmb_read_header ( ifstream &input, int &xsize, int &ysize, unsigned char &
 
   step = 0;
 
-  while ( 1 )
-  {
-    getline ( input, line );
+  while (1) {
+    getline(input, line);
 
-    if ( input.eof ( ) )
-    {
+    if (input.eof()) {
       cout << "\n";
       cout << "PGMB_READ_HEADER - Fatal error!\n";
       cout << "  End of file.\n";
       return true;
     }
 
-    if ( line[0] == '#' )
-    {
+    if (line[0] == '#'){
       continue;
     }
 
-    if ( step == 0 )
-    {
+    if (step == 0) {
       s_word_extract_first ( line, word, rest );
 
-      if ( s_len_trim ( word ) <= 0 )
-      {
+      if (s_len_trim(word) <= 0) {
         continue;
       }
 
-      if ( !s_eqi ( word, "P5" ) )
-      {
+      if (!s_eqi(word, "P5")) {
         cout << "\n";
         cout << "PGMB_READ_HEADER - Fatal error.\n";
         cout << "  Bad magic number = \"" << word << "\".\n";
         return true;
       }
+
       line = rest;
       step = 1;
     }
 
-    if ( step == 1 )
-    {
-      s_word_extract_first ( line, word, rest );
+    if (step == 1) {
+      s_word_extract_first (line, word, rest);
  
-      if ( s_len_trim ( word ) <= 0){
+      if (s_len_trim(word) <= 0) {
         continue;
       }
-      xsize = atoi (word.c_str());
+      xsize = atoi(word.c_str());
       line = rest;
       step = 2;
     }
 
-    if ( step == 2 )
-    {
-      s_word_extract_first ( line, word, rest );
+    if (step == 2){
+      s_word_extract_first (line, word, rest);
 
-      if ( s_len_trim ( word ) <= 0 )
-      {
+      if (s_len_trim (word) <= 0) {
         continue;
       }
-      ysize = atoi ( word.c_str ( ) );
+      ysize = atoi (word.c_str());
       line = rest;
       step = 3;
     }
 
-    if ( step == 3 )
-    {
-      s_word_extract_first ( line, word, rest );
+    if (step == 3) {
+      s_word_extract_first(line, word, rest);
 
-      if ( s_len_trim ( word ) <= 0 )
-      {
+      if (s_len_trim(word) <= 0) {
         continue;
       }
-      fred = atoi ( word.c_str ( ) );
-      maxg = ( unsigned char ) fred;
+      fred = atoi(word.c_str());
+      maxg = (unsigned char) fred;
       line = rest;
       break;
     }
   }
-
   return false;
 }
 
 //****************************************************************************80
 
-//    PGMB_READ_TEST tests the binary portable gray map read routines.
+//    PGMB_READ_TEST tests the binary portable gray map read routines. return true if there is an error
 bool pgmb_read_test ( string input_name )
 {
   bool error;
@@ -269,34 +258,27 @@ bool pgmb_read_test ( string input_name )
 
 //  Read the data.
 
-  error = pgmb_read ( input_name, xsize, ysize, maxg, &g );
+  error = pgmb_read(input_name, xsize, ysize, maxg, &g);
 
   if (error){
-    cout << "\n";
-    cout << "PGMB_READ_TEST: Fatal error!\n";
-    cout << "  PGMB_READ failed.\n";
+    cout << "PGMB_READ_TEST: Fatal error! \nPGMB_READ failed.\n";
     delete [] g;
     return true;
   }
 
 //  Check the data.
 
-  error = pgmb_check_data ( xsize, ysize, maxg, g );
+  error = pgmb_check_data (xsize, ysize, maxg, g);
 
   delete [] g;
 
   if ( error ){
-    cout << "\n";
-    cout << "  PGMB_CHECK_DATA reports bad data from the file.\n";
+    cout << "PGMB_CHECK_DATA reports bad data from the file.\n";
     return true;
   }
-
-  cout << "\n";
-  cout << "  PGMB_CHECK_DATA passes the data from the file.\n";
-
+  cout << "PGMB_CHECK_DATA : le fichier .pgm est lisible. \n";
   return false;
 }
-
 
 //    S_EQI reports whether two strings are equal, ignoring case.
 bool s_eqi ( string s1, string s2 )

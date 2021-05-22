@@ -1,8 +1,10 @@
-#include <fstream>
-#include <iostream>
-#include <string>
-
+#include <iostream> // cout, cerr
+#include <fstream> // ifstream
+#include <sstream> // stringstream
 using namespace std;
 
-const int WID = 648;
-const int HEIGHT = 486;
+typedef struct arrayColor {
+    int row;
+    int col; 
+
+}arrayColor;

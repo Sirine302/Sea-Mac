@@ -1,9 +1,13 @@
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "../include/config.h"
 
-Config * createConfig(char *config){
-    Config *maConfig = (Config *)malloc(sizeof(Config));
+using namespace std;
+
+Config* createConfig(char *config){
+    Config* maConfig = new Config();
     FILE* map = NULL; 
     char line[256]="";
 
@@ -19,7 +23,6 @@ Config * createConfig(char *config){
         fgets(line, 256, map); 
         sscanf(line,"%i %i %i", &maConfig->znear, &maConfig->zfar, &maConfig->fov);
     }
-
     fclose(map); 
 
     return maConfig;

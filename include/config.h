@@ -4,7 +4,7 @@
 /* récupération du fichier de configuration .timac" */ 
 
 typedef struct Config {
-    char* config[20];
+    char config[20];
     int xsize;
     int ysize;
     int zmin;
@@ -14,5 +14,4 @@ typedef struct Config {
     int fov;
 }Config;
 
-Config * createConfig(char *config);
-
+Config* createConfig(char *config);

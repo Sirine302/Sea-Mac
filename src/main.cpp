@@ -24,26 +24,39 @@ int main(int argc, char* argv[])
 {
 	/* ================ CONFIGURATION TIMAC ================= */
 	
-    Config *config = (Config *)malloc(sizeof(Config));
+    Config* config = new Config();
+	
     config = createConfig(argv[1]);
 	if (config) {
 		cout << "Fichier de configuration chargé." << endl;
+		cout << config->config << endl;
+	}
+	else {
+		cout << "Echec du fichier de configuration." << endl;
+		return -1;
 	}
 
+	// récupération des valeurs du fichier de configuration : dimensions heightmap 
+	char* fichier = config->config;
+    int xSize = config->xsize;
+    int ySize = config->ysize;
+    int zMin = config->zmin;
+    int zMax = config->zmax;
+    int zNear = config->znear;
+    int zFar = config->zfar;
+    int fov = config->fov;
 
 	/* ================ CREATION DU QUAD TREE =============== */
 
     Node* quadTree = new Node;
     
-	// récupération des valeurs du fichier de configuration : dimensions heightmap 
 	int xMin = 0; 
-    int xMax = config->xsize;
+    int xMax = xSize-xMin;
     int yMin = 0;
-    int yMax = config->ysize;
+    int yMax = ySize - yMin;
 
 	// création du quad tree 
 	addNode(quadTree, xMin, xMax, yMin, yMax);
-
 
 	/* ======================= FENETRE ====================== */
 
@@ -64,7 +77,7 @@ int main(int argc, char* argv[])
 	// active l'élimination des faces 
 	glEnable(GL_CULL_FACE);
 
-	/*	La fonction glCullFace() a trois options possibles :
+	/*	NOTE : La fonction glCullFace() a trois options possibles :
 		- GL_BACK : élimine les faces arrière (valeur initiale); 
 		- GL_FRONT : élimine les faces avant ;
 		- GL_FRONT_AND_BACK : éliminent les faces avant et arrière.
@@ -75,18 +88,52 @@ int main(int argc, char* argv[])
 	glCullFace(GL_CCW); 
 
 
-	/* ====================== LOAD FILE ===================== */
-	// visiblement ne fonctionne pas, va savoir pourquoi (à retravailler)
-	// char const *file = "./src/heightmap.hmap";
+	/* ====================== LOAD MAP ====================== */
 
-	// if(!heightmap.LoadFile(file, 5, 1, TGA_BILINEAR))
-	// {
-	// 	cerr << "Erreur : impossible de charger heightmap.hmap" << endl;
-	// 	exit(-1);
-	// }
+	// NOTE : il faut un fichier .pgm de type P2 (binaire) pour que ça marche
+	// fichier obtenu avec : enregistrement photoshop 8bit + export Gimp pgm ASCII  
 
-	// Callbacks
-	//glutDisplayFunc(Display); // affichage
+	int test = 0, row = 0, col = 0, numrows = 0, numcols = 0;
+	ifstream infile(fichier);
+	stringstream ss;
+	string inputLine = "";
+
+	// First line : version
+	getline(infile,inputLine);
+	cout << "Version : " << inputLine << endl;
+
+	getline(infile,inputLine);
+	cout << inputLine << endl;
+
+	// Continue with a stringstream
+	ss << infile.rdbuf();
+	// Second line : size
+	ss >> numcols >> numrows;
+	cout << numcols << " columns and " << numrows << " rows" << endl;
+
+	ss >> test; 
+	cout << "Valeur max : " << test << endl;
+	int array[numrows][numcols];
+
+	// Following lines : data
+	for(row = 0; row < numrows; ++row) {
+		for (col = 0; col < numcols; ++col){ 
+			ss >> array[row][col];
+			
+			// [A FAIRE] 
+			// dans ce tableau, on récupère toutes les coordonnées des points de l'image :
+			// 		- x = row, 
+			// 		- y = col, 
+			// 		- z = array[row][col]  
+
+		}
+	}
+
+	infile.close();
+
+	/* ===================== CALLBACKS ====================== */
+
+	glutDisplayFunc(Display); // affichage
 	glutReshapeFunc(Reshape); // resize écran
 	glutSpecialFunc(Special); // mouvement caméra 
 	
