@@ -21,7 +21,7 @@ public:
 	HeightMap();
 	~HeightMap();
 	// Fonction � appeler une seule fois : elle lit un fichier HMAP et le charge.
-	bool LoadFile(char* str_fichier,	// Chemin du fichier � charger
+	bool LoadFile(const char* str_fichier,	// Chemin du fichier � charger
 		unsigned int hauteur_max,		// Hauteur maximum atteignable par un point
 									// de la heightmap (correspond � un point noir).
 		unsigned int largeur_quad,	// Largeur de chaque quad qui compose la

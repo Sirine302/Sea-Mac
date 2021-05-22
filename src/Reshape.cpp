@@ -1,5 +1,7 @@
 // Reshape.cpp
 
+// reshape de la fenêtre 
+
 #include <GL/glut.h>
 
 void Reshape(int w, int h)

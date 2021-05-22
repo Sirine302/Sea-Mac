@@ -1,4 +1,4 @@
-// TGALoader.cpp - chargeur de fichiers TGA.
+// TGALoader.cpp - chargeur de fichiers TGA. (= texture) 
 // 2004 par Funto. Si vous utilisez cette classe dans un de vos projets, un mail
 // de remerciement � funto@nomade.fr serait le bienvenu ;).
 

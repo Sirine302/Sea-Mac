@@ -1,5 +1,7 @@
 // Special.cpp
 
+// déplacement et rotation de la caméra 
+
 #include <math.h>
 #include <GL/glut.h>
 

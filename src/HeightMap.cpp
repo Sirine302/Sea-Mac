@@ -13,7 +13,7 @@ HeightMap::~HeightMap()
 	Free();
 }
 
-bool HeightMap::LoadFile(char* str_fichier, unsigned int hauteur_max,
+bool HeightMap::LoadFile(const char* str_fichier, unsigned int hauteur_max,
 		unsigned int largeur_quad, TGAFiltering filtering)
 {
 	unsigned char header[5];	// Ent�te du fichier HMAP
