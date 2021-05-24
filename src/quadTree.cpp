@@ -1,7 +1,7 @@
 #include <GL/glut.h>
 #include <iostream>
 
-#include "quadTree.h"
+#include "../include/quadTree.h"
 
 using namespace std;
 
@@ -28,3 +28,20 @@ void addNode(Node* newNode, int l1, int l2, int h1, int h2) {
         addNode(newNode->nordOuest, l, l2, h, h2);
     }
 }
+
+/* 
+
+FRUSTUM CULLING 
+
+Déterminer quels sont les carrés dans le champs de la caméra 
+
+3 CAS :
+    - le triangle représentant le champ de la cam est dans le carré de la node 
+    - le carré de la node est entièrement dans le champ de la cam
+    - une partie seulement du carré est traversé par la cam
+
+    - tester ces trois cas dans une fonction 
+        - renvoie true si le cas est dans le champ 
+        - sinon renvoie false
+
+*/ 
