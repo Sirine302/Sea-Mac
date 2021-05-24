@@ -33,6 +33,29 @@ Vect2D create2D(float x, float y) {
 	return vect;
 }
 
+
+Vect2D createVectorFromPoints(Point2D p1, Point2D p2){   
+    Vect2D vect;
+    vect.x = p2.x - p1.x;
+    vect.y = p2.y - p1.y;
+    return vect;
+}
+
+Vect2D VectPlusVect(Vect2D p, Vect2D v){
+    Vect2D newPoint;
+    newPoint.x = p.x + v.x;
+    newPoint.y = p.y + v.y;
+    return newPoint;
+}
+
+// Norme d'un vecteur V
+float norm(Vect2D v){
+    float norme;
+    norme = sqrt(v.x * v.x + v.y * v.y);
+    return norme;
+}
+
+
 Square createSquare(int x1, int x2, int y1, int y2) {
     Square aSquare;
     aSquare.h1 = y1;
@@ -40,6 +63,25 @@ Square createSquare(int x1, int x2, int y1, int y2) {
     aSquare.l1 = x1;
     aSquare.l2 = x2;
     return aSquare;
+}
+
+// créer un triangle (calculs à vérifier, j'ai probablement écrit n'importe quoi)
+Triangle createTriangle(Point2D position, int zFar, int fov) {
+    Triangle tri;
+
+    Point2D* positionFar = new Point2D; 
+    *positionFar = create2D(0, zFar);
+    Vect2D * distZfar = new Vect2D;
+    *distZfar = createVectorFromPoints(position, *positionFar);
+
+    float normOp = tan(fov/2) * norm(*distZfar);
+    float thetaOp = M_PI/2; 
+
+    tri.p1 = position;
+    tri.p2 = create2D(normOp*cos(thetaOp), normOp*sin(thetaOp));
+    tri.p3 = create2D(- normOp*cos(thetaOp), normOp*sin(thetaOp));
+
+    return tri;
 }
 
 // vérifie si le point est dans le square de la node 

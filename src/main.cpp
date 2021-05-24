@@ -14,6 +14,7 @@
 # include "../include/quadTree.h" 
 #include "../include/visu.h"
 #include "../include/gldrawing.h"
+#include "../include/geometry.h"
 // # include "../include/camera.h"
 
 using namespace std;
@@ -268,6 +269,10 @@ Config* config = new Config();
 	// création du quad tree 
 	addNode(quadTree, xMin, xMax, yMin, yMax);
 
+	/* ======================= CAMERA ======================= */
+
+	Triangle * champCam = new Triangle();
+	*champCam = createTriangle({pos_x, pos_y}, zFar, fov);
 
     /* ======================= OPENGL ======================= */
 
