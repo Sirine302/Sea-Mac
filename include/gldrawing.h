@@ -8,4 +8,5 @@
 void glDrawRepere(float length);
 void drawTest();
 void drawRect(Point ref);
+
 #endif

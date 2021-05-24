@@ -44,94 +44,71 @@ float obj_rot = 0.0;
 unsigned int size_pt = 5;
 
 
-/*********************************************************/
-/* fonction de dessin de la scène à l'écran              */
+/* **************** DESSIN A L'ECRAN ******************* */
+
 static void drawFunc(void) { 
-	/* reinitialisation des buffers : couleur et ZBuffer */
+	// réinitialisation des buffers couleur et ZBuffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	/* modification de la matrice de la scène */
+	// modification de la matrice de la scène
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	/* Debut du dessin de la scène */
+	// Début du dessin de la scène 
 	glPushMatrix();
 	
 	/* placement de la caméra de biri */
+
 	// ici, latitude = phi, longitude = theta 
 	// gluLookAt(profondeur*sin(longitude)*sin(latitude), profondeur*cos(latitude) + 3,profondeur*cos(longitude)*sin(latitude),
     //          10.0,0.0,10.0,
     //          0.0,1.0,0.0);
 
-	// placement de la caméra du mec 
+	// placement de la caméra du mec d'internet
 	gluLookAt(
-        pos_x, 0.0, pos_z,
-        x_vise, 0.0, z_vise,
+        pos_x, 1., pos_z,
+        x_vise, 1., z_vise,
         0.0, 1.0, 0.0);
 
 	glColor3f(1.0,0.0,0.0);
 	glDrawRepere(5.0);
-
-	// // noircit une partie de la map (loin de l'origine)
-	// float position[4] = {10.0,10.0,10.0,1.0};
-	// float black[3] = {0.0,0.0,0.0};
-	// float intensite[3] = {1000.0,1000.0,1000.0};
-	// glEnable(GL_LIGHTING);
-	// glEnable(GL_LIGHT0);
-	// glLightfv(GL_LIGHT0,GL_POSITION,position);
-	// glLightfv(GL_LIGHT0,GL_DIFFUSE,intensite);
-	// glLightfv(GL_LIGHT0,GL_SPECULAR,black);
-
 
 	glPushMatrix();
 	glRotatef(obj_rot,0.0,1.0,0.0);
 	glColor3f(1.0,1.0,1.0);
 	displayMap(*map, isFilled); 
 	
-	glDisable(GL_LIGHTING);
+	//glDisable(GL_LIGHTING);
 
-	/* Fin du dessin */
-	glPopMatrix();
+	glPopMatrix();			// Fin du dessin
+	glFinish(); 			// Fin de la définition de la scène 
+	glutSwapBuffers();		// Changement buffer d'affichage
 
-	/* fin de la définition de la scène */
-	glFinish();
-
-	/* changement de buffer d'affichage */
-	glutSwapBuffers();
 }
 
-/*********************************************************/
-/* fonction de changement de dimension de la fenetre     */
-/* paramètres :                                          */
-/* - width : largeur (x) de la zone de visualisation     */
-/* - height : hauteur (y) de la zone de visualisation    */
 
-static void reshapeFunc(int width,int height) {
+/* ================ REDIMENSION FENETRE ================ */
+
+static void reshapeFunc(int width, int height) {
 
 	GLfloat h = (GLfloat) width / (GLfloat) height ;
 	
-	/* dimension de l'écran GL */
-	glViewport(0, 0, (GLint)width, (GLint)height);
-	/* construction de la matrice de projection */
-	glMatrixMode(GL_PROJECTION);
+	glViewport(0, 0, (GLint)width, (GLint)height);	// dimension écran GL
+	glMatrixMode(GL_PROJECTION);					// matrice de projection
 	glLoadIdentity();
-	/* définition de la camera */
-	gluPerspective( 60.0, h, 0.01, 10.0 );
+	gluPerspective( 60.0, h, 0.01, 10.0 ); 			// Définition caméra 
 
-	/* Retour a la pile de matrice Modelview et effacement de celle-ci */
-	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode(GL_MODELVIEW);						// Retour pile de matrice
 	glLoadIdentity();
 }
 
-/*********************************************************/
-/* fonction associée aux interruptions clavier           */
-/* paramètres :                                          */
-/* - c : caractère saisi                                 */
-/* - x,y : coordonnée du curseur dans la fenêtre         */
+
+/* ================ EVENEMENTS CLAVIER ================= */
 
 static void kbdFunc(unsigned char c, int x, int y) {
 	// ESC, Q ou q : sortie programme
 	// F : changement de la vue
+	// x, y = coordonnées curseur (inutilisé)
 
 	switch(c) {
 		case 27 : case 'Q' : case 'q' :
@@ -151,21 +128,16 @@ static void kbdFunc(unsigned char c, int x, int y) {
 	glutPostRedisplay();
 }
 
-/*********************************************************/
-/* fonction associée aux interruptions clavier pour les  */
-/*          touches spéciales                            */
-/* paramètres :                                          */
-/* - c : code de la touche saisie                        */
-/* - x,y : coordonnée du curseur dans la fenêtre         */
+/* ====== EVENEMENTS CLAVIER (TOUCHES SPECIALES) ======= */
 
 static void kbdSpFunc(int c, int x, int y) {
 
-	/* sortie du programme si utilisation des touches ESC */
 	double dir_x, dir_z;
 	dir_x=x_vise - pos_x;
 	dir_z=z_vise - pos_z;
 
 	switch(c) {
+		// version Biri
 		// case GLUT_KEY_UP :
 		// 	if (latitude>STEP_ANGLE) latitude -= STEP_ANGLE;
 		// 	break;
@@ -179,6 +151,7 @@ static void kbdSpFunc(int c, int x, int y) {
 		// 	longitude += STEP_ANGLE;
 		// 	break;
 
+		// Version du mec 
 		case GLUT_KEY_UP:
 		 	if (latitude>STEP_ANGLE) latitude -= STEP_ANGLE;
 			pos_x += dir_x*VITESSE_DEPLACEMENT;
@@ -219,31 +192,18 @@ static void kbdSpFunc(int c, int x, int y) {
 }
 
 
-/*********************************************************/
-/* fonction associée au clic de la souris                */
-/* paramètres :                                          */
-/* - button : nom du bouton pressé GLUT_LEFT_BUTTON,     */
-/*   GLUT_MIDDLE_BUTTON ou GLUT_RIGHT_BUTTON             */
-/* - state : état du bouton button GLUT_DOWN ou GLUT_UP  */
-/* - x,y : coordonnées du curseur dans la fenêtre        */
+/* ============== EVENEMENTS CLIC SOURIS =============== */
 
 static void mouseFunc(int button, int state, int x, int y) { 
 }
 
-
-/*********************************************************/
-/* fonction associée au déplacement de la souris bouton  */
-/* enfoncé.                                              */
-/* paramètres :                                          */
-/* - x,y : coordonnées du curseur dans la fenêtre        */
+/* ================ DEPLACEMENT SOURIS ================= */
 
 static void motionFunc(int x, int y) { 
 }
 
 
-/* ***************** INITIALISATION ******************** */
-/* initialisation des paramètres de rendu et des objets  */
-/* de la scène.                           			     */
+/* ================== INITIALISATION =================== */
 
 static void init() {
 	profondeur = 3;
@@ -253,14 +213,9 @@ static void init() {
 	obj_rot = 0.0;
 	size_pt = 5;
 
-	/* INITIALISATION DES PARAMETRES GL */
-	/* Background color */
-	glClearColor(0.0, 0.0, 0.0 ,0.0);
-	/* activation du ZBuffer */
-	glEnable( GL_DEPTH_TEST);
-
-	/* lissage des couleurs sur les facettes */
-	glShadeModel(GL_SMOOTH);
+	glClearColor(0.0, 0.0, 0.0 ,0.0);	// Background 
+	glEnable( GL_DEPTH_TEST);			// Z-Buffer
+	glShadeModel(GL_SMOOTH);			// Lissage couleurs
 }
 
 
@@ -271,16 +226,13 @@ void idle(void) {
 }
 
 
-
-
-
-
 int main(int argc, char** argv) {
 
 	/* ================ CONFIGURATION TIMAC ================= */
 	
-    Config* config = new Config();
+Config* config = new Config();
 	
+
     config = createConfig(argv[1]);
 	if (config) {
 		cout << "Fichier de configuration " << config->config << " chargé." << endl;
@@ -301,7 +253,8 @@ int main(int argc, char** argv) {
     int fov = config->fov;
 
 	/* ====================== LOAD MAP ====================== */
-	map = createHeightmap(fichier);
+
+	map = createHeightmap(*config);
 
 	/* ================ CREATION DU QUAD TREE =============== */
 
@@ -320,8 +273,7 @@ int main(int argc, char** argv) {
 
 	glutInit(&argc, argv);
 	
-	// initialisation du mode d'affichage :
-	// RVB + ZBuffer + Double buffer
+	// initialisation du mode d'affichage
 	glutInitDisplayMode(GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE);
 
 	glutInitWindowPosition(0, 0);

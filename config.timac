@@ -1,14 +1,12 @@
 src/test.pgm
-255 255 0 255
+50 50 0 2
 10 50 100 
 
 === LEGENDE === 
-# nom du fichier en paramètre : chemin depuis le makefile
-# SI COMPILATION DEPUIS MAIN : mettre src/ devant test.pgm
 xmax:255
 ymax:255
 zmin:0
-zmax:3
+zmax:10
 zNear:10
 zFar:50
 fov:100

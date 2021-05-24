@@ -7,18 +7,16 @@
 #endif
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include "TGALoader.h"
 #include <iostream>
 #include <fstream>
 #include <sstream> 
 
+#include "geometry.h"
+#include "config.h"
+
+
 using namespace std;
 
-typedef struct Point {
-	float x;
-	float y;
-	float z;
-}Point;
 
 typedef struct Heightmap {
 
@@ -30,34 +28,18 @@ typedef struct Heightmap {
 	int yMax;				// nb col .pgm
 	int zMax;	 			// valeur max .pgm	
 
+	int zMaxConfig;
+	
 	Point* tabPoints;		// Récupère les coordonnées de chaque point
 	bool m_loaded;			// Indique si la map a bien été chargée.
 }Heightmap;
 
-// Création d'un point à partir de ses coordonnées 
-Point createPoint(float x, float y, float z);
 
 // Chargement des données du .pgm
-Heightmap* createHeightmap(char* fichier); 
-void displayMap(Heightmap map, bool isFilled);
+Heightmap* createHeightmap(Config config); 
 
-void Afficher(Heightmap map, GLuint list);	// Fait ce qu'elle dit...
+void displayMap(Heightmap map, bool isFilled); // à ranger dans "display.cpp"
+
 void Free(Heightmap * map);		// Libère la mémoire allouée s'il y en a(appelée par le destructeur automatiquement).
-
-
-
-/*
-bool IsLoaded(Heightmap * map); // vérifie le chargement de la map 
-
-// Retourne la largeur de la heightmap chargée (correspond au nombre de pixels en largeur de l'image chargée).
-inline unsigned int GetWidth(Heightmap * map);
-
-// Pareil mais avec la hauteur de l'image (qui devient profondeur de la heightmap).
-inline unsigned int GetDepth(Heightmap * map);
-
-// Renvoie la hauteur d'un point en (x, y) : dépend de m_hauteur_max et de la "noirceur" du point.
-inline float HeightOfPointAt(int x, int y);
-	// return (float)m_hauteur_max - ((float)m_data[x+y*m_width]/255.0)*(float)m_hauteur_max;
-*/
 
 #endif // HEIGHT_MAP_H

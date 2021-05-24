@@ -1,3 +1,6 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -12,6 +15,8 @@ typedef struct Config {
     int znear;
     int zfar;    
     int fov;
-}Config;
+}config;
 
 Config* createConfig(char *config);
+
+#endif

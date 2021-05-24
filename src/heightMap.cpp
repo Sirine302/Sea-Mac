@@ -2,19 +2,12 @@
 
 #include "../include/heightMap.h"
 
-Point createPoint(float x, float y, float z) {
-	Point  point;
-	point.x = x;
-	point.y = y;
-	point.z = z;
-	return point;
-}
 
 // créer createHeightmap 
-Heightmap* createHeightmap(char* fichier) {
+Heightmap* createHeightmap(Config config) {
 	Heightmap* myMap = new Heightmap;
 
-	ifstream infile(fichier);
+	ifstream infile(config.config);
 	stringstream ss;
 	string inputLine = "";
 
@@ -38,26 +31,33 @@ Heightmap* createHeightmap(char* fichier) {
 
 	int array[myMap->xMax][myMap->yMax];
 	myMap->tabPoints = new Point[myMap->xMax * myMap->yMax];
-
 	int count = 0;
+
 
 	for(int x = 0; x < myMap->xMax; x++) {
 		for (int y = 0; y < myMap->yMax; y++){ 
+
 			ss >> array[x][y];
 			float z = array[x][y];
-			Point newPoint = createPoint((float)x, (float)y, z);
+
+			float newX = (x/myMap->xMax) * config.xsize;
+			float newY = (y/myMap->yMax) * config.ysize;
+			float newZ = (z/myMap->zMax) * config.zmax;
+
+			Point newPoint = createPoint(newX, newY, newZ);
 			myMap->tabPoints[count] = newPoint;
 			count++;
 		}
 	}
+	myMap->zMaxConfig = config.zmax;
+	
 	cout << "Données du .pgm récupérées." << endl;	
 	infile.close();
 	return myMap;
 }
 
 float findZ(int x, int y, Heightmap map) {
-	return map.tabPoints[x + y * map.xMax].z / 255.0 * 10 - 3; 
-	// formule au pifomètre, à reprendre correctement avec celle du projet 
+	return map.tabPoints[x + y * map.xMax].z ;
 }
 
 float heightColor(float a, float b, float c) {
@@ -66,7 +66,6 @@ float heightColor(float a, float b, float c) {
 
 void displayMap(Heightmap map, bool isFilled) {
 
-	int count = 0;
 	for(int y = 0; y < map.yMax - 1; y++) {
 		for(int x = 0; x < map.xMax - 1; x ++) {
 		if (isFilled) {
@@ -77,18 +76,18 @@ void displayMap(Heightmap map, bool isFilled) {
 		}
 
 			// Triangle 1
-			float m1 = heightColor(	map.tabPoints[x + y * map.xMax].z / 255.0, 
-									map.tabPoints[x + y+1 * map.xMax].z / 255.0,
-									map.tabPoints[x+1 + y+1 * map.xMax].z / 255.0);
+			float m1 = heightColor(	map.tabPoints[x + y * map.xMax].z/map.zMaxConfig, 
+									map.tabPoints[x + y+1 * map.xMax].z/map.zMaxConfig,
+									map.tabPoints[x+1 + y+1 * map.xMax].z/map.zMaxConfig);
 			glColor3f(0.0, m1, 0.0);						// couleur selon hauteur moyenne
 			glVertex3f(x, findZ(x, y, map), y);				// 1
 			glVertex3f(x, findZ(x, y+1, map), y+1);			// 2
 			glVertex3f(x+1, findZ(x+1, y+1, map), y+1);		// 3
 
 			// // Triangle 2
-			float m2 = heightColor(	map.tabPoints[x + y * map.xMax].z / 255.0, 
-									map.tabPoints[x+1 + y * map.xMax].z / 255.0,
-									map.tabPoints[x+1 + y+1 * map.xMax].z / 255.0);
+			float m2 = heightColor(	map.tabPoints[x + y * map.xMax].z/map.zMaxConfig, 
+									map.tabPoints[x+1 + y * map.xMax].z/map.zMaxConfig,
+									map.tabPoints[x+1 + y+1 * map.xMax].z/map.zMaxConfig);
 			glColor3f(0.0, m2, 0.0);						// Couleur selon hauteur moyenne
 			glVertex3f(x, findZ(x, y, map), y);				// 1
 			glVertex3f(x+1, findZ(x+1, y, map), y);			// 4
