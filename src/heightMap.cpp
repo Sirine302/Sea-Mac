@@ -2,7 +2,6 @@
 
 #include "../include/heightMap.h"
 
-
 // créer createHeightmap 
 Heightmap* createHeightmap(Config config) {
 	Heightmap* myMap = new Heightmap;
@@ -28,6 +27,7 @@ Heightmap* createHeightmap(Config config) {
 	
 	ss >> myMap->zMax; 
 	cout << "Valeur couleur max : " << myMap->zMax << endl;
+
 
 	int array[myMap->xMax][myMap->yMax];
 	myMap->tabPoints = new Point[myMap->xMax * myMap->yMax];
@@ -79,6 +79,7 @@ void displayMap(Heightmap map, bool isFilled) {
 			float m1 = heightColor(	map.tabPoints[x + y * map.xMax].z/map.zMaxConfig, 
 									map.tabPoints[x + y+1 * map.xMax].z/map.zMaxConfig,
 									map.tabPoints[x+1 + y+1 * map.xMax].z/map.zMaxConfig);
+
 			glColor3f(0.0, m1, 0.0);						// couleur selon hauteur moyenne
 			glVertex3f(x, findZ(x, y, map), y);				// 1
 			glVertex3f(x, findZ(x, y+1, map), y+1);			// 2
@@ -92,6 +93,7 @@ void displayMap(Heightmap map, bool isFilled) {
 			glVertex3f(x, findZ(x, y, map), y);				// 1
 			glVertex3f(x+1, findZ(x+1, y, map), y);			// 4
 			glVertex3f(x+1, findZ(x+1, y+1, map), y+1);		// 3
+			
 		glEnd();
 		}
 	}

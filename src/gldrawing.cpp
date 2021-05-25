@@ -28,4 +28,3 @@ void drawTest() {
 		glVertex3f(5.,5.,0.);
 	glEnd();
 }
-

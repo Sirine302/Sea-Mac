@@ -51,8 +51,7 @@ Triangle createTriangle(Point2D position, int zFar, int fov);
 bool pointInSquare(Vect2D point, Square rect);
 
 // vérifie si le point est dans le triangle de la vue caméra
-// si le point est à droite de tous les côtés, alors il est dans le triangle 
-
+// si le point est à droite de tous les côtés, alors il est dans le triangle
 float dot(Vect2D v1, Vect2D v2);
 bool isRightSide(Vect2D point, Vect2D p1, Vect2D p2);
 

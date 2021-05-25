@@ -25,8 +25,6 @@ Heightmap* map = new Heightmap();
 
 
 
-
-
 #define VITESSE_DEPLACEMENT 1.0
 #define VITESSE_ROTATION 0.1
 
@@ -67,8 +65,8 @@ static void drawFunc(void) {
 
 	// placement de la caméra du mec d'internet
 	gluLookAt(
-        pos_x, 1., pos_z,
-        x_vise, 1., z_vise,
+        pos_x, 3., pos_z,
+        x_vise, 3., z_vise,
         0.0, 1.0, 0.0);
 
 	glColor3f(1.0,0.0,0.0);
@@ -214,7 +212,7 @@ static void init() {
 	obj_rot = 0.0;
 	size_pt = 5;
 
-	glClearColor(0.0, 0.0, 0.0 ,0.0);	// Background 
+	glClearColor(0.4, 0.7, 1. ,0.0);	// Background 
 	glEnable( GL_DEPTH_TEST);			// Z-Buffer
 	glShadeModel(GL_SMOOTH);			// Lissage couleurs
 }
@@ -231,7 +229,7 @@ int main(int argc, char** argv) {
 
 	/* ================ CONFIGURATION TIMAC ================= */
 	
-Config* config = new Config();
+	Config* config = new Config();
 	
 
     config = createConfig(argv[1]);
@@ -300,6 +298,5 @@ Config* config = new Config();
 	//glutIdleFunc(idle);				// Rotation lente
 
 	glutMainLoop();					// Appel des callbacks
-
 	return 0;
 }
