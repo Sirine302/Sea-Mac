@@ -29,3 +29,12 @@ void addNode(Node* newNode, int l1, int l2, int h1, int h2) {
         addNode(newNode->nordOuest, l, l2, h, h2);
     }
 }
+
+bool isLeaf(Node node) {
+    if (node.nordOuest || node.nordEst || node.sudOuest || node.sudEst) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
