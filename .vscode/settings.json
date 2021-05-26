@@ -8,6 +8,8 @@
         "ostream": "cpp",
         "fstream": "cpp",
         "iosfwd": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "*.tcc": "cpp",
+        "sstream": "cpp"
     }
 }

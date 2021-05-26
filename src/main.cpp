@@ -75,7 +75,7 @@ static void drawFunc(void) {
 	glPushMatrix();
 	glRotatef(obj_rot,0.0,1.0,0.0);
 	glColor3f(1.0,1.0,1.0);
-	displayMap(*map, isFilled); 
+	//displayMap(*map, isFilled); 
 	
 	//glDisable(GL_LIGHTING);
 
@@ -254,18 +254,61 @@ int main(int argc, char** argv) {
 	/* ====================== LOAD MAP ====================== */
 
 	map = createHeightmap(*config);
+	cout << map->xMax << " " << map->yMax << endl;
+	int ** allZ = (int **)malloc(sizeof(int)*map->xMax*map->yMax);
+	allZ = recupAllZ(config->config, map->xMax, map->yMax, map->zMax);
+
+	cout << "allZ : " << allZ[0][1] << endl;
+	cout << "find Z en 0,1 : " << findZ(allZ, 0, 1) << endl;
 
 	/* ================ CREATION DU QUAD TREE =============== */
 
     Node* quadTree = new Node;
+
+	cout << "Quad Tree initialisé. " << endl;
     
+	// convertir les valeurs x et y : les ramener entre xMin et xMax config
+	// TO DO 
+	
 	int xMin = 0; 
-    int xMax = xSize - xMin;
+    int xMax = xSize - xMin -1;
     int yMin = 0;
-    int yMax = ySize - yMin;
+    int yMax = ySize - yMin -1;
+
+	Point * NO = new Point;
+	Point * NE = new Point;
+	Point * SO = new Point;
+	Point * SE = new Point;
+
+	cout << "Points initialisés. " << endl;
+
+	*NO = createPoint(xMin, yMax, findZ(allZ, xMin, yMax));
+	*NE = createPoint(xMax, yMax, findZ(allZ, xMax, yMax));
+	*SO = createPoint(xMin, yMin, findZ(allZ, xMin, yMin));
+	*SE = createPoint(xMax, yMin, findZ(allZ, xMax, yMin));
+
+	cout << "Points ajoutés. " << endl;
 
 	// création du quad tree 
-	addNode(quadTree, xMin, xMax, yMin, yMax);
+	addNode(quadTree, *NO, *NE, *SO, *SE, allZ);
+
+	cout << "Nodes ajoutées." << endl;
+	drawMap(quadTree, zMax);
+
+	cout << "Map dessinée." << endl;
+
+
+	/* On refait le quad tree : 
+	- parcours du quad tree 
+		DANS UN PREMIER TEMPS 
+		- si les enfants sont des feuilles, on affiche les triangles 
+		à partir des infos de la feuille 
+		- sinon, on descend sur la feuille 
+
+		DANS UN SECOND TEMPS 
+		- ajout des conditions nécessaires pour le LOD & Frustum Culling & couleurs etc
+		
+	*/
 
 	/* ======================= CAMERA ======================= */
 

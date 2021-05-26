@@ -1,12 +1,8 @@
 src/test.pgm
-50 50 0 2
+257 257 0 2
 10 50 100 
 
 === LEGENDE === 
-xmax:255
-ymax:255
-zmin:0
-zmax:10
-zNear:10
-zFar:50
-fov:100
+chemin/image
+xmax ymax zmin zmax
+zNear zFar fov
