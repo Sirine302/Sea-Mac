@@ -270,22 +270,37 @@ int main(int argc, char** argv) {
 	// TO DO 
 	
 	int xMin = 0; 
-    int xMax = xSize - xMin -1;
+    int xMax = xSize - xMin ;
     int yMin = 0;
-    int yMax = ySize - yMin -1;
+    int yMax = ySize - yMin;
 
-	int x = (xMin + xMax) / 2;
-	int y = (yMin + yMax) / 2;
+	Square rect = createSquare(0, 0, xMax/2, yMax/2);
 
-	Square rect = createSquare(x, y, xMax/2, yMax/2);
-
-	cout << "coordonnées rect : " << rect.x << " " << rect.y << " " << endl;
+	cout << "coordonnées centre rect : " << rect.x << " " << rect.y << " " << endl;
+	cout << "largeur rect : " << rect.largeur << "   | hauteur rect " << rect.hauteur << " " << endl;
 	cout << "Square initialisé. " << endl;
 
 	// création du quad tree 
 	quadTree = initNode(quadTree, rect);
+
 	fillQuadTree(quadTree, *pgm, *config);
-	cout << " x : " << quadTree->tabPoints[1].x << endl;
+
+	// quadTree->profondeur = heightQuadTree(quadTree);
+	// cout << "profondeur : " << quadTree->profondeur << endl;
+
+
+	// cout << " x1 : " << quadTree->nordOuest->nordOuest->tabPoints[0].x << " y1 : " << quadTree->nordOuest->nordOuest->tabPoints[0].y << endl;
+
+	// cout << " x2 : " << quadTree->nordOuest->nordOuest->tabPoints[1].x << " y2 : " << quadTree->nordOuest->nordOuest->tabPoints[1].y << endl;
+
+	// cout << " x3 : " << quadTree->nordOuest->nordOuest->tabPoints[2].x << " y3 : " << quadTree->nordOuest->nordOuest->tabPoints[2].y << endl;
+
+	// cout << " x4 : " << quadTree->nordOuest->nordOuest->tabPoints[3].x << " y4 : " << quadTree->nordOuest->nordOuest->tabPoints[3].y << endl;
+
+	// cout << " x1 : " << quadTree->nordOuest->nordEst->tabPoints[0].x << endl;
+	// cout << " x : " << quadTree->nordEst->nordEst->nordEst << endl;
+	// cout << " x : " << quadTree->nordEst->nordEst->nordEst << endl;
+	// cout << " x : " << quadTree->nordEst->nordEst->nordEst << endl;
 
 
 	cout << "Nodes ajoutées." << endl;

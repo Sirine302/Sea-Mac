@@ -87,10 +87,11 @@ Triangle createTriangle(Point2D position, int zFar, int fov) {
 // vérifie si le point est dans le square de la node 
 bool pointInSquare(Point point, Square rect){
     return (point.x >= rect.x - rect.largeur &&
-            point.x <= rect.x + rect.largeur &&
+            point.x < rect.x + rect.largeur &&
             point.y >= rect.y - rect.hauteur && 
-            point.y <= rect.y + rect.hauteur);
+            point.y < rect.y + rect.hauteur);
 }
+
 
 // vérifie si le point est dans le triangle de la vue caméra
 // si le point est à droite de tous les côtés, alors il est dans le triangle 
