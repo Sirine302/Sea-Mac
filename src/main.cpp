@@ -9,19 +9,22 @@
 # include <stdio.h>
 # include <math.h>
 
-# include "../include/heightMap.h"
-# include "../include/config.h"
-# include "../include/quadTree.h" 
-#include "../include/visu.h"
-#include "../include/gldrawing.h"
-#include "../include/geometry.h"
+# include "quadTree.h" 
+# include "heightMap.h"
+# include "config.h"
+#include "visu.h"
+#include "gldrawing.h"
+#include "geometry.h"
+#include "fillQuad.h"
+
 // # include "../include/camera.h"
 
 using namespace std;
 
 // NOTE : il faut un fichier .pgm de type P2 (binaire)
 // enregistrement photoshop 8bit + export Gimp pgm ASCII  
-Heightmap* map = new Heightmap();
+Image* pgm = new Image();
+Node* quadTree = new Node();
 
 
 
@@ -75,8 +78,10 @@ static void drawFunc(void) {
 	glPushMatrix();
 	glRotatef(obj_rot,0.0,1.0,0.0);
 	glColor3f(1.0,1.0,1.0);
-	//displayMap(*map, isFilled); 
-	
+
+	drawTerrain(quadTree, isFilled); 
+
+	//drawTest();
 	//glDisable(GL_LIGHTING);
 
 	glPopMatrix();			// Fin du dessin
@@ -253,17 +258,11 @@ int main(int argc, char** argv) {
 
 	/* ====================== LOAD MAP ====================== */
 
-	map = createHeightmap(*config);
-	cout << map->xMax << " " << map->yMax << endl;
-	int ** allZ = (int **)malloc(sizeof(int)*map->xMax*map->yMax);
-	allZ = recupAllZ(config->config, map->xMax, map->yMax, map->zMax);
+	pgm = loadImage(*config);
+	cout << pgm->xMax << " " << pgm->yMax << endl;
 
-	cout << "allZ : " << allZ[0][1] << endl;
-	cout << "find Z en 0,1 : " << findZ(allZ, 0, 1) << endl;
 
 	/* ================ CREATION DU QUAD TREE =============== */
-
-    Node* quadTree = new Node;
 
 	cout << "Quad Tree initialisé. " << endl;
     
@@ -275,27 +274,24 @@ int main(int argc, char** argv) {
     int yMin = 0;
     int yMax = ySize - yMin -1;
 
-	Point * NO = new Point;
-	Point * NE = new Point;
-	Point * SO = new Point;
-	Point * SE = new Point;
+	int x = (xMin + xMax) / 2;
+	int y = (yMin + yMax) / 2;
 
-	cout << "Points initialisés. " << endl;
+	Square rect = createSquare(x, y, xMax/2, yMax/2);
 
-	*NO = createPoint(xMin, yMax, findZ(allZ, xMin, yMax));
-	*NE = createPoint(xMax, yMax, findZ(allZ, xMax, yMax));
-	*SO = createPoint(xMin, yMin, findZ(allZ, xMin, yMin));
-	*SE = createPoint(xMax, yMin, findZ(allZ, xMax, yMin));
-
-	cout << "Points ajoutés. " << endl;
+	cout << "coordonnées rect : " << rect.x << " " << rect.y << " " << endl;
+	cout << "Square initialisé. " << endl;
 
 	// création du quad tree 
-	addNode(quadTree, *NO, *NE, *SO, *SE, allZ);
+	quadTree = initNode(quadTree, rect);
+	fillQuadTree(quadTree, *pgm, *config);
+	cout << " x : " << quadTree->tabPoints[1].x << endl;
+
 
 	cout << "Nodes ajoutées." << endl;
-	drawMap(quadTree, zMax);
-
+	
 	cout << "Map dessinée." << endl;
+
 
 
 	/* On refait le quad tree : 

@@ -10,31 +10,38 @@
 #include <iostream>
 #include <fstream>
 #include <sstream> 
+# include <stdlib.h>
+# include <stdio.h>
+# include <math.h>
 
 #include "geometry.h"
 #include "config.h"
+#include "quadTree.h"
 
 using namespace std;
 
-typedef struct Heightmap {
-	// Dimensions & Hauteur maximale d'un point de la heightmap
+typedef struct Image {
 	int xMax;				// nb row .pgm 
 	int yMax;				// nb col .pgm
 	int zMax;	 			// valeur max .pgm	
 
-	int zMaxConfig;
-	bool m_loaded;			// Indique si la map a bien été chargée.
+	int ** allZ;			// tableau de tous les Z
+}Image, ntm;
+
+typedef struct Heightmap {
+	Config config;
+	Image image;
 }Heightmap;
 
+
 // Chargement des données du .pgm
-Heightmap* createHeightmap(Config config); 
+Image* loadImage(Config config); 
 
-int ** recupAllZ(char* fichier, int xMax, int yMax, int zMax);
+void initMap(Heightmap * map, Config config, Image image);
+
 float findZ(int ** array, int x, int y);
-
+Point ** recupAllPoints(char* fichier, int xMax, int yMax, int zMax);
 float heightColor(float a, float b, float c, int zMax);
-void displayMap(Heightmap map, bool isFilled); // à ranger dans "display.cpp"
-
-void Free(Heightmap * map);		// Libère la mémoire allouée s'il y en a(appelée par le destructeur automatiquement).
+void Free(Image * map);		// Libère la mémoire allouée s'il y en a(appelée par le destructeur automatiquement).
 
 #endif // HEIGHT_MAP_H

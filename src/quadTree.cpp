@@ -1,107 +1,93 @@
 #include <GL/glut.h>
 #include <iostream>
 
-#include "../include/quadTree.h"
+#include "quadTree.h"
 
 using namespace std;
 
 // Ici : définition de toutes les fonctions liées au quadTree 
 
-void addNode(Node* newNode, Point NO, Point NE, Point SO, Point SE, int ** allZ) {
-    // Sommets de la zone couverte par la node  
-    newNode->NO = NO;
-    newNode->NE = NE; 
-    newNode->SO = SO;
-    newNode->SE = SE;
+Node * initNode(Node * newNode, Square rect) {
+    newNode->surface = rect;
 
-    int l = (NO.x + NE.x)/2; // centre de la largeur du carré 
-    int h = (NO.x + SO.x)/2; // centre de la hauteur du carré 
+    newNode->nordOuest = nullptr;
+    newNode->nordEst = nullptr;
+    newNode->sudOuest = nullptr;
+    newNode->sudEst = nullptr;
 
-    //vérif si la longueur est toujours entière
-    if (NE.x - NO.x > 1 && NO.y - SO.y > 1) {
-        newNode->nordOuest = new Node;
-        newNode->nordEst = new Node;
-        newNode->sudOuest =  new Node;
-        newNode->sudEst = new Node;
-        
-        // ajoute les nodes avec les coordonnées des sommets de sa zone  
-        addNode(newNode->nordOuest, 
-            NO, 
-            createPoint(l, NO.y, findZ(allZ, l, NO.y)), 
-            createPoint(NO.x, h, findZ(allZ, NO.x, h)),
-            createPoint(l, h, findZ(allZ, l, h)),
-            allZ);
+    newNode->nbPoints = 0;
 
-        addNode(newNode->nordEst, 
-            createPoint(l, NE.y, findZ(allZ, l, NE.y)), 
-            NE, 
-            createPoint(l, h, findZ(allZ, l, h)),
-            createPoint(NE.x, h, findZ(allZ, NE.x, h)),
-            allZ);
+    return newNode;
+}
 
-        addNode(newNode->sudOuest, 
-            createPoint(SO.x, h, findZ(allZ, SO.x, h)),
-            createPoint(l, h, findZ(allZ, l, h)),
-            SO, 
-            createPoint(l, SO.y, findZ(allZ, l, SO.y)),
-            allZ);
-
-        addNode(newNode->sudEst, 
-            createPoint(l, h, findZ(allZ, l, h)),
-            createPoint(SE.x, h, findZ(allZ, SE.x, h)),             
-            createPoint(l, SE.y, findZ(allZ, l, SE.y)), 
-            SE,
-            allZ);    
+void insert(Node* node, Point point) {
+    cout << point.x << " " << point.y << " " << point.z << endl;
+    if (pointInSquare(point, node->surface)) {
+        if (node->nbPoints < 4) {
+            node->tabPoints[node->nbPoints] = point;
+            node->nbPoints++;
+        } 
+        else {
+            if (isLeaf(node)) {
+                subdivide(node);
+            }
+            repartition(point, node);
+        }
     }
     else {
-        newNode->nordOuest = nullptr;
-        newNode->nordEst = nullptr;
-        newNode->sudOuest =  nullptr;
-        newNode->sudEst = nullptr;
-
+        cout << "out of square" << endl;
     }
 }
 
-// Si une branche n'a aucun enfant, c'est une feuille 
+void subdivide(Node * node) {
+
+    node->nordOuest = new Node();
+    node->nordEst = new Node();
+    node->sudOuest = new Node();
+    node->sudEst = new Node();
+
+    // Le point de référence est au centre de la surface 
+    float x = node->surface.x; 
+    float y = node->surface.x; 
+    float w = node->surface.largeur;
+    float h = node->surface.hauteur;
+
+    cout << "coord point ref : " << x << " " << y << " " << w << " " << h << endl;
+
+    Square rectNO = createSquare(x - w/2, y + h/2, w/2, h/2);
+    Square rectNE = createSquare(x + w/2, y + h/2, w/2, h/2);
+    Square rectSO = createSquare(x - w/2, y - h/2, w/2, h/2);
+    Square rectSE = createSquare(x + w/2, y - h/2, w/2, h/2);
+
+    initNode(node->nordOuest, rectNO);
+    initNode(node->nordEst, rectNE);
+    initNode(node->sudOuest, rectSO);
+    initNode(node->sudEst, rectSE);
+}
+
+// à voir si on en a besoin 
+void repartition(Point point, Node* node)
+{
+    if (pointInSquare(point, node->nordOuest->surface)) {
+        insert(node->nordOuest, point);
+    } 
+    else if(pointInSquare(point, node->nordEst->surface)) {
+        insert(node->nordEst, point);
+    }
+    else if(pointInSquare(point, node->sudOuest->surface)) {
+        insert(node->sudOuest, point);
+    }
+    else if(pointInSquare(point, node->sudEst->surface)) {
+        insert(node->sudEst, point);
+    }
+}
+
 bool isLeaf(Node * node) {
     if (!node->nordOuest && !node->nordEst && !node->sudOuest && !node->sudEst) {
         return true;   // true = c'est une feuille  
     }
     else {
         return false;    // false = pas une feuille
-    }
-}
-
-// Dessine les triangles d'un square d'une node 
-void drawSquare(Node node, int zMax) {
-
-    // Triangle 1
-    float m1 = heightColor(	node.SO.z, node.NO.z, node.NE.z, zMax);
-    glColor3f(0.0, m1, 0.0);     // Couleur selon z moyen
-
-    glVertex3f(node.SO.x, node.SO.z, node.SO.y);    // SO
-    glVertex3f(node.NO.x, node.NO.z, node.NO.y);	// NO
-    glVertex3f(node.NE.x, node.NE.z, node.NE.y);	// NE
-
-    // // Triangle 2
-    float m2 = heightColor(	node.SO.z, node.SE.z, node.NE.z, zMax);    
-    glColor3f(0.0, m2, 0.0);     // Couleur selon z moyen
-
-    glVertex3f(node.SO.x, node.SO.z, node.SO.y);    // SO
-    glVertex3f(node.SE.x, node.SE.z, node.SE.y);	// SE
-    glVertex3f(node.NE.x, node.NE.z, node.NE.y);	// NE
-}
-
-void drawMap(Node * node, int zMax) {
-    if (isLeaf(node)) {
-        drawSquare(*node, zMax);
-    }
-    else {
-        cout << node->NE.x << " " << node->NE.y << "je suis pas une feuille" << endl;
-        drawMap(node->nordOuest, zMax);
-        drawMap(node->nordEst, zMax);
-        drawMap(node->sudOuest, zMax);
-        drawMap(node->sudEst, zMax);
     }
 }
 

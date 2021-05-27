@@ -15,12 +15,10 @@ typedef struct Vect2D {
 }Point2D, Vect2D;
 
 typedef struct Square {
-    // largeur : l2-l1 
-    int l1;
-    int l2;
-    // hauteur : h2-h1
-    int h1;
-    int h2;
+    float x;
+    float y;
+    float largeur;
+    float hauteur;
 }Square;
 
 typedef struct Triangle {
@@ -42,13 +40,13 @@ Vect2D VectPlusVect(Vect2D p, Vect2D v);
 // Norme d'un vecteur V
 float norm(Vect2D v);
 
-Square createSquare(int x1, int x2, int y1, int y2);
+Square createSquare(int x, int y, int largeur, int hauteur);
 
 // créer un triangle (calculs à vérifier, j'ai probablement écrit n'importe quoi)
 Triangle createTriangle(Point2D position, int zFar, int fov);
 
 // vérifie si le point est dans le square de la node 
-bool pointInSquare(Vect2D point, Square rect);
+bool pointInSquare(Point point, Square rect);
 
 // vérifie si le point est dans le triangle de la vue caméra
 // si le point est à droite de tous les côtés, alors il est dans le triangle

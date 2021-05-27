@@ -56,12 +56,12 @@ float norm(Vect2D v){
 }
 
 
-Square createSquare(int x1, int x2, int y1, int y2) {
+Square createSquare(int x, int y, int largeur, int hauteur) {
     Square aSquare;
-    aSquare.h1 = y1;
-    aSquare.h2 = y2;
-    aSquare.l1 = x1;
-    aSquare.l2 = x2;
+    aSquare.x = x;
+    aSquare.y = y;
+    aSquare.largeur = largeur;
+    aSquare.hauteur = hauteur;
     return aSquare;
 }
 
@@ -85,14 +85,11 @@ Triangle createTriangle(Point2D position, int zFar, int fov) {
 }
 
 // vérifie si le point est dans le square de la node 
-bool pointInSquare(Vect2D point, Square rect){
-    if (rect.h2 > point.y && rect.h1 < point.y 
-     && rect.l1 < point.x && rect.l2 > point.y) {
-        return true;
-    }
-    else {
-        return false;
-    }
+bool pointInSquare(Point point, Square rect){
+    return (point.x >= rect.x - rect.largeur &&
+            point.x <= rect.x + rect.largeur &&
+            point.y >= rect.y - rect.hauteur && 
+            point.y <= rect.y + rect.hauteur);
 }
 
 // vérifie si le point est dans le triangle de la vue caméra
@@ -122,19 +119,19 @@ bool pointInTriangle(Vect2D point, Triangle triangle) {
 }
 
 // vérifie si intersection entre le triangle et le rectangle 
-bool intersection(Triangle tri, Square rect) {
-    if (pointInSquare(tri.p1, rect) ||
-        pointInSquare(tri.p2, rect) ||
-        pointInSquare(tri.p3, rect) || 
+// bool intersection(Triangle tri, Square rect) {
+//     if (pointInSquare(tri.p1, rect) ||
+//         pointInSquare(tri.p2, rect) ||
+//         pointInSquare(tri.p3, rect) || 
 
-        pointInTriangle(create2D(rect.l1, rect.h1), tri) ||
-        pointInTriangle(create2D(rect.l1, rect.h2), tri) ||
-        pointInTriangle(create2D(rect.l2, rect.h1), tri) ||
-        pointInTriangle(create2D(rect.l2, rect.h2), tri)) {
-        return true;
-    }
+//         pointInTriangle(create2D(rect.l1, rect.h1), tri) ||
+//         pointInTriangle(create2D(rect.l1, rect.h2), tri) ||
+//         pointInTriangle(create2D(rect.l2, rect.h1), tri) ||
+//         pointInTriangle(create2D(rect.l2, rect.h2), tri)) {
+//         return true;
+//     }
 
-    else {
-        return false;
-    }
-}
+//     else {
+//         return false;
+//     }
+// }

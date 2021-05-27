@@ -4,22 +4,26 @@
 #include "geometry.h"
 #include "heightMap.h"
 
-typedef struct Node
-{    // Les points sont les angles de la surface sur laquelle la node est définie 
-    Point NO; 
-    Point NE; 
-    Point SO; 
-    Point SE;
+typedef struct Node {    
+    Square surface;     // coordonnées surface
 
-    // Les nodes sont les enfants du noeud dans lequel on se trouve 
+    // Nodes enfants 
     Node* nordOuest;
     Node* nordEst; 
     Node* sudEst;
     Node* sudOuest;
+
+    // Points
+    int nbPoints;       // nb points contenus
+    Point tabPoints[4]; // points de la node
+
 } QuadTree, Node;
 
-void addNode(Node* newNode, Point NO, Point NE, Point SO, Point SE, int ** allZ);
+Node * initNode(Node * newNode, Square rect);
+void insert(Node* node, Point point);
 
-void drawMap(Node * node, int zMax);
-void drawSquare(Node node, int zMax);
+bool isLeaf(Node * node);
+void repartition(Point point, Node* node);
+void subdivide(Node * node);
+
 #endif
