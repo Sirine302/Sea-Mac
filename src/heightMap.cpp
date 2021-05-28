@@ -51,11 +51,6 @@ Image* loadImage(Config config) {
 	return image;
 }
 
-void initMap(Heightmap * map, Config config, Image image) {
-	map->config = config;
-	map->image = image;
-}
-
 float findZ(int ** array, int x, int y) {
     return array[x][y];
 }

@@ -1,11 +1,6 @@
-#include <GL/glut.h>
-#include <iostream>
-
 #include "quadTree.h"
 
 using namespace std;
-
-// Ici : définition de toutes les fonctions liées au quadTree 
 
 Node * initNode(Node * newNode, Square rect) {
     newNode->surface = rect;
@@ -14,27 +9,25 @@ Node * initNode(Node * newNode, Square rect) {
     newNode->nordEst = nullptr;
     newNode->sudOuest = nullptr;
     newNode->sudEst = nullptr;
-    newNode->nbPoints = 0;
 
-    if (rect.largeur > 1) {
+    if (rect.y2 - rect.y1 > 1) {
+        float x1 = newNode->surface.x1; 
+        float y1 = newNode->surface.y1; 
+        float x2 = newNode->surface.x2;
+        float y2 = newNode->surface.y2;
+
+        int x = (rect.x1 + rect.x2)/2;
+        int y = (rect.y1 + rect.y2)/2;
 
         newNode->nordOuest = new Node();
         newNode->nordEst = new Node();
         newNode->sudOuest = new Node();
         newNode->sudEst = new Node();
 
-        // Le point de référence est au centre de la surface 
-        float x = newNode->surface.x; 
-        float y = newNode->surface.y; 
-        float w = newNode->surface.largeur;
-        float h = newNode->surface.hauteur;
-
-        cout << endl << "je subdivise autour du point : " << x << " " << y << " " << w << " " << h << endl;
-
-        Square rectNO = createSquare(x - w/2, y + h/2, w/2, h/2);
-        Square rectNE = createSquare(x + w/2, y + h/2, w/2, h/2);
-        Square rectSO = createSquare(x - w/2, y - h/2, w/2, h/2);
-        Square rectSE = createSquare(x + w/2, y - h/2, w/2, h/2);
+        Square rectNO = createSquare(x1, x, y1, y);
+        Square rectNE = createSquare(x, x2, y1, y);
+        Square rectSO = createSquare(x1, x, y, y2);
+        Square rectSE = createSquare(x, x2, y, y2);
 
         initNode(newNode->nordOuest, rectNO);
         initNode(newNode->nordEst, rectNE);
@@ -44,46 +37,14 @@ Node * initNode(Node * newNode, Square rect) {
     return newNode;
 }
 
-void insert(Node* node, Point point) {
-
-    if (!isLeaf(node)) {
-        if (pointInSquare(point, node->nordOuest->surface)) {
-            insert (node->nordOuest, point); 
-        }
-        if(pointInSquare(point, node->nordEst->surface)) {
-            insert(node->nordEst, point);
-        }
-        if(pointInSquare(point, node->sudOuest->surface)) {
-            insert(node->sudOuest, point);
-        }
-        if(pointInSquare(point, node->sudEst->surface)) {
-            insert(node->sudEst, point);
-        }
-    }
-
-    else if (isLeaf(node)) {
-        // cout << "je veux insérer " << point.x << " " << point.y << " " << point.z << endl;
-
-        if (node->nbPoints < 4) {
-            node->tabPoints[node->nbPoints] = point;
-            node->nbPoints++;
-        } 
-        else {
-            cout << "ERROR" << endl;
-        }
-    }
-    
-}
-
 bool isLeaf(Node * node) {
     if (!node->nordOuest && !node->nordEst && !node->sudOuest && !node->sudEst) {
-        return true;   // true = c'est une feuille  
+        return true;
     }
     else {
-        return false;    // false = pas une feuille
+        return false;
     }
 }
-
 
 uint heightQuadTree(Node * node) {
     uint heightNO = 0;
@@ -128,22 +89,5 @@ uint heightQuadTree(Node * node) {
              heightSE >= heightNE) {
         return heightSE + 1;
     }
-
     return -1;
-
 }
-
-
-/*
-
-Parcours de l'arbre : 
-    > récupération des z OK 
-    > affichage des triangles (faire fonction drawQuad / drawTriangle)
-        - condition 0 : si c'est une feuille 
-        - condition 1 : le LOD le permet 
-        - condition 2 : le Frustum Culling le permet 
-            > Si on appuie sur F
-                    > Vision fils de fer 
-                        - Si c'est une feuille 
-                            > Couleur qui change 
-*/

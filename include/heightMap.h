@@ -26,22 +26,10 @@ typedef struct Image {
 	int zMax;	 			// valeur max .pgm	
 
 	int ** allZ;			// tableau de tous les Z
-}Image, ntm;
+}Image;
 
-typedef struct Heightmap {
-	Config config;
-	Image image;
-}Heightmap;
-
-
-// Chargement des données du .pgm
 Image* loadImage(Config config); 
-
-void initMap(Heightmap * map, Config config, Image image);
-
 float findZ(int ** array, int x, int y);
-Point ** recupAllPoints(char* fichier, int xMax, int yMax, int zMax);
 float heightColor(float a, float b, float c, int zMax);
-void Free(Image * map);		// Libère la mémoire allouée s'il y en a(appelée par le destructeur automatiquement).
 
 #endif // HEIGHT_MAP_H

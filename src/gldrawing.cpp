@@ -19,62 +19,61 @@ void glDrawRepere(float length) {
 	glEnd();
 }
 
-void drawTest() {
-	glBegin(GL_LINES);
-		glColor3f(1.,0.,0.);
-		glVertex3f(0.,0.,0.);
-		glVertex3f(5.,5.,0.);
-	glEnd();
-}
-
-
-
-void drawTriangles(Node * node, bool isFilled) {
-	// cout << "J'ETRE FEUILLE TO DRAW" << endl;
-
-	Point NO = node->tabPoints[0];
-	Point NE = node->tabPoints[1];
-	Point SO = node->tabPoints[2];
-	Point SE = node->tabPoints[3];
-	
-	// cout << NO.x << " " << NO.y << " " << NO.z << endl;
-	// cout << NE.x << " " << NE.y << " " << NE.z << endl;
-	// cout << SO.x << " " << SO.y << " " << SO.z << endl;
-	// cout << SE.x << " " << SE.y << " " << SE.z << endl;
-
-
-	glVertex3f(SO.x, SO.z, SO.y);
-	glVertex3f(NO.x, NO.z, NO.y);
-	glVertex3f(NE.x, NE.z, NE.y);
-
-	glVertex3f(SO.x, SO.z, SO.y);
-	glVertex3f(SE.x, SE.z, SE.y);
-	glVertex3f(NE.x, NE.z, NE.y);
-
-	glEnd();
-}
-
-
-void drawTerrain(Node * node, bool isFilled) {
-
-
-	if (isLeaf(node)) {	
-		if (isFilled) {
-			glBegin(GL_TRIANGLE_STRIP);
-		}
-		else {
-			glBegin(GL_LINE_STRIP);
-		}
-		
-			drawTriangles(node, isFilled);
-
-		glEnd();
-
+void drawTriangles(Point NO, Point NE, Point SO, Point SE, bool isFilled) {
+	if (isFilled) {
+		glBegin(GL_TRIANGLE_STRIP);
 	}
 	else {
-		drawTerrain(node->nordOuest, isFilled);
-		drawTerrain(node->nordEst, isFilled);
-		drawTerrain(node->sudOuest, isFilled);
-		drawTerrain(node->sudEst, isFilled);
+		glBegin(GL_LINE_STRIP);
+	}
+		float m1 = heightColor(SO.z, NO.z, NE.z, 255);
+		float m2 = heightColor(SO.z, SE.z, NE.z, 255);
+
+		glColor3f(0., m1, 0.);
+		glVertex3f(SO.x, SO.z / 255 * 3, SO.y);
+		glVertex3f(NO.x, NO.z / 255 * 3, NO.y);
+		glVertex3f(NE.x, NE.z / 255 * 3, NE.y);
+
+		glColor3f(0., m2, 0.);
+		glVertex3f(SO.x, SO.z / 255 * 3, SO.y);
+		glVertex3f(SE.x, SE.z / 255 * 3, SE.y);
+		glVertex3f(NE.x, NE.z / 255 * 3, NE.y);
+
+	glEnd();
+}
+
+void drawTerrain(Node * node, Image image, bool isFilled) {
+	if (isLeaf(node)) {	
+		Point NO = createPoint(	node->surface.x1, 
+								node->surface.y1, 
+								findZ(image.allZ, 
+									  node->surface.x1, 
+									  node->surface.y1));
+
+		Point NE = createPoint(	node->surface.x2, 
+								node->surface.y1, 
+								findZ(image.allZ, 
+									  node->surface.x2, 
+									  node->surface.y1));
+
+		Point SO = createPoint(	node->surface.x1, 
+								node->surface.y2, 
+								findZ(image.allZ, 
+									  node->surface.x1, 
+									  node->surface.y2));
+
+		Point SE = createPoint(	node->surface.x2, 
+								node->surface.y2, 
+								findZ(image.allZ, 
+									  node->surface.x2, 
+									  node->surface.y2));
+
+		drawTriangles(NO, NE, SO, SE, isFilled);
+	}
+	else {
+		drawTerrain(node->nordOuest, image, isFilled);
+		drawTerrain(node->nordEst, image, isFilled);
+		drawTerrain(node->sudOuest, image, isFilled);
+		drawTerrain(node->sudEst, image, isFilled);
 	}
 }

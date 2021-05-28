@@ -12,8 +12,4 @@ extern float longitude;
 extern float obj_rot;
 extern unsigned int size_pt;
 
-/* Déclaration des fonctions */
-void idle(void);
-
-
 #endif

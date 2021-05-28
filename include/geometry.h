@@ -15,10 +15,10 @@ typedef struct Vect2D {
 }Point2D, Vect2D;
 
 typedef struct Square {
-    float x;
-    float y;
-    float largeur;
-    float hauteur;
+    float x1;
+    float y1;
+    float x2;
+    float y2;
 }Square;
 
 typedef struct Triangle {

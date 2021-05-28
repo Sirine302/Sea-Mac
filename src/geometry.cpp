@@ -56,12 +56,12 @@ float norm(Vect2D v){
 }
 
 
-Square createSquare(int x, int y, int largeur, int hauteur) {
+Square createSquare(int x1, int x2, int y1, int y2) {
     Square aSquare;
-    aSquare.x = x;
-    aSquare.y = y;
-    aSquare.largeur = largeur;
-    aSquare.hauteur = hauteur;
+    aSquare.x1 = x1;
+    aSquare.y1 = y1;
+    aSquare.x2 = x2;
+    aSquare.y2 = y2;
     return aSquare;
 }
 
@@ -86,10 +86,10 @@ Triangle createTriangle(Point2D position, int zFar, int fov) {
 
 // vérifie si le point est dans le square de la node 
 bool pointInSquare(Point point, Square rect){
-    return (point.x >= rect.x - rect.largeur &&
-            point.x < rect.x + rect.largeur &&
-            point.y >= rect.y - rect.hauteur && 
-            point.y < rect.y + rect.hauteur);
+    return (point.x >= rect.x2 - rect.x1 &&
+            point.x <= rect.x2 &&
+            point.y >= rect.y2 - rect.y1 && 
+            point.y <= rect.y2);
 }
 
 

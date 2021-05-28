@@ -15,7 +15,6 @@
 #include "visu.h"
 #include "gldrawing.h"
 #include "geometry.h"
-#include "fillQuad.h"
 
 // # include "../include/camera.h"
 
@@ -38,7 +37,7 @@ bool isFilled = true;
 /* ====================================================== */
 
 /* variables globales pour la gestion de la caméra */
-float profondeur = 3;
+float profondeur = 10;
 float latitude = 0.0;
 float longitude = M_PI/2.;
 
@@ -67,19 +66,22 @@ static void drawFunc(void) {
     //          0.0,1.0,0.0);
 
 	// placement de la caméra du mec d'internet
+	// gluLookAt(
+    //     pos_x, 3., pos_z,
+    //     pos_x + , 3., pos,
+    //     0.0, 1.0, 0.0);
 	gluLookAt(
         pos_x, 3., pos_z,
-        x_vise, 3., z_vise,
-        0.0, 1.0, 0.0);
+			pos_x + profondeur*sin(longitude)*sin(latitude), 
+			pos_y + profondeur*cos(latitude), 
+			pos_z + profondeur*cos(longitude)*sin(latitude),
+        cos(longitude + M_PI/2), 0., sin(longitude + M_PI/2));
 
 	glColor3f(1.0,0.0,0.0);
 	glDrawRepere(5.0);
 
 	glPushMatrix();
-	glRotatef(obj_rot,0.0,1.0,0.0);
-	glColor3f(1.0,1.0,1.0);
-
-	drawTerrain(quadTree, isFilled); 
+	drawTerrain(quadTree, *pgm, isFilled); 
 
 	//drawTest();
 	//glDisable(GL_LIGHTING);
@@ -215,20 +217,12 @@ static void init() {
 	longitude = 0.0;
 
 	obj_rot = 0.0;
-	size_pt = 5;
+	size_pt = 10;
 
 	glClearColor(0.4, 0.7, 1. ,0.0);	// Background 
 	glEnable( GL_DEPTH_TEST);			// Z-Buffer
 	glShadeModel(GL_SMOOTH);			// Lissage couleurs
 }
-
-
-// Rotation lente autour de l'axe vertical 
-void idle(void) {
-	obj_rot+=STEP_ANGLE;
-	glutPostRedisplay();
-}
-
 
 int main(int argc, char** argv) {
 
@@ -259,84 +253,39 @@ int main(int argc, char** argv) {
 	/* ====================== LOAD MAP ====================== */
 
 	pgm = loadImage(*config);
-	cout << pgm->xMax << " " << pgm->yMax << endl;
-
 
 	/* ================ CREATION DU QUAD TREE =============== */
-
-	cout << "Quad Tree initialisé. " << endl;
     
-	// convertir les valeurs x et y : les ramener entre xMin et xMax config
-	// TO DO 
-	
-	int xMin = 0; 
-    int xMax = xSize - xMin ;
-    int yMin = 0;
-    int yMax = ySize - yMin;
+	int x1 = 0; 
+    int x2 = xSize - x1 -1;
+    int y1 = 0;
+    int y2 = ySize - y1 -1;
 
-	Square rect = createSquare(0, 0, xMax/2, yMax/2);
-
-	cout << "coordonnées centre rect : " << rect.x << " " << rect.y << " " << endl;
-	cout << "largeur rect : " << rect.largeur << "   | hauteur rect " << rect.hauteur << " " << endl;
+	Square rect = createSquare(x1, x2, y1, y2);
 	cout << "Square initialisé. " << endl;
 
 	// création du quad tree 
 	quadTree = initNode(quadTree, rect);
+	cout << "QuadTree initialisé." << endl;
 
-	fillQuadTree(quadTree, *pgm, *config);
-
-	// quadTree->profondeur = heightQuadTree(quadTree);
-	// cout << "profondeur : " << quadTree->profondeur << endl;
-
-
-	// cout << " x1 : " << quadTree->nordOuest->nordOuest->tabPoints[0].x << " y1 : " << quadTree->nordOuest->nordOuest->tabPoints[0].y << endl;
-
-	// cout << " x2 : " << quadTree->nordOuest->nordOuest->tabPoints[1].x << " y2 : " << quadTree->nordOuest->nordOuest->tabPoints[1].y << endl;
-
-	// cout << " x3 : " << quadTree->nordOuest->nordOuest->tabPoints[2].x << " y3 : " << quadTree->nordOuest->nordOuest->tabPoints[2].y << endl;
-
-	// cout << " x4 : " << quadTree->nordOuest->nordOuest->tabPoints[3].x << " y4 : " << quadTree->nordOuest->nordOuest->tabPoints[3].y << endl;
-
-	// cout << " x1 : " << quadTree->nordOuest->nordEst->tabPoints[0].x << endl;
-	// cout << " x : " << quadTree->nordEst->nordEst->nordEst << endl;
-	// cout << " x : " << quadTree->nordEst->nordEst->nordEst << endl;
-	// cout << " x : " << quadTree->nordEst->nordEst->nordEst << endl;
-
-
-	cout << "Nodes ajoutées." << endl;
-	
-	cout << "Map dessinée." << endl;
-
-
-
-	/* On refait le quad tree : 
-	- parcours du quad tree 
-		DANS UN PREMIER TEMPS 
-		- si les enfants sont des feuilles, on affiche les triangles 
-		à partir des infos de la feuille 
-		- sinon, on descend sur la feuille 
-
-		DANS UN SECOND TEMPS 
-		- ajout des conditions nécessaires pour le LOD & Frustum Culling & couleurs etc
-		
-	*/
 
 	/* ======================= CAMERA ======================= */
 
-	Triangle * champCam = new Triangle();
-	*champCam = createTriangle({pos_x, pos_y}, zFar, fov);
+	// Triangle * champCam = new Triangle();
+	// *champCam = createTriangle({pos_x, pos_y}, zFar, fov);
+
 
     /* ======================= OPENGL ======================= */
 
 	glutInit(&argc, argv);
 	
 	// initialisation du mode d'affichage
-	glutInitDisplayMode(GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
 
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(500, 500);
 
-	if (glutCreateWindow("VIZU PRG") == GL_FALSE) {
+	if (glutCreateWindow("VisuTerrIMAC | Sirine & Audrey") == GL_FALSE) {
 		return 1;
 	}
 
@@ -349,7 +298,6 @@ int main(int argc, char** argv) {
 	glutSpecialFunc(kbdSpFunc);		// Event clavier (touches spé.)
 	glutMouseFunc(mouseFunc);		// Event souris 
 	glutMotionFunc(motionFunc);		// Event drag souris 
-	//glutIdleFunc(idle);				// Rotation lente
 
 	glutMainLoop();					// Appel des callbacks
 	return 0;
