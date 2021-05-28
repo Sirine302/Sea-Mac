@@ -30,12 +30,15 @@ typedef struct Triangle {
 
 // Création d'un point à partir de ses coordonnées 
 Point createPoint(float x, float y, float z);
+Vector create3D(float x, float y, float z);
 
 Vect2D create2D(float x, float y);
 
 Vect2D createVectorFromPoints(Point2D p1, Point2D p2);
 
 Vect2D VectPlusVect(Vect2D p, Vect2D v);
+
+Vector produitVect(Vector a, Vector b);
 
 // Norme d'un vecteur V
 float norm(Vect2D v);

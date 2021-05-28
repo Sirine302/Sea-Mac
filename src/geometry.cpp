@@ -18,6 +18,8 @@ Déterminer quels sont les carrés dans le champs de la caméra
 
 */ 
 
+/* ============= POINTS & VECTEURS ============== */ 
+
 Point createPoint(float x, float y, float z) {
 	Point  point;
 	point.x = x;
@@ -26,13 +28,21 @@ Point createPoint(float x, float y, float z) {
 	return point;
 }
 
+Vector create3D(float x, float y, float z) {
+	Vector vect;
+	vect.x = x;
+	vect.y = y;
+	vect.z = z;
+	return vect;
+}
+
+
 Vect2D create2D(float x, float y) {
 	Vect2D vect;
 	vect.x = x;
 	vect.y = y;
 	return vect;
 }
-
 
 Vect2D createVectorFromPoints(Point2D p1, Point2D p2){   
     Vect2D vect;
@@ -48,6 +58,15 @@ Vect2D VectPlusVect(Vect2D p, Vect2D v){
     return newPoint;
 }
 
+Vector produitVect(Vector a, Vector b) {
+    Vector produit;
+    produit.x = a.y * b.z - a.z * b.y;
+    produit.y = -a.x * b.z + a.z * b.x;
+    produit.z = a.x * b.y -a.y * b.x;
+    return produit;
+}
+
+
 // Norme d'un vecteur V
 float norm(Vect2D v){
     float norme;
@@ -55,6 +74,7 @@ float norm(Vect2D v){
     return norme;
 }
 
+/* ============= SQUARE & TRIANGLE ============== */ 
 
 Square createSquare(int x1, int x2, int y1, int y2) {
     Square aSquare;

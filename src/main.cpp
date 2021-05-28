@@ -12,84 +12,53 @@
 # include "quadTree.h" 
 # include "heightMap.h"
 # include "config.h"
-#include "visu.h"
-#include "gldrawing.h"
-#include "geometry.h"
+# include "visu.h"
+# include "gldrawing.h"
+# include "geometry.h"
 
 // # include "../include/camera.h"
 
 using namespace std;
 
-// NOTE : il faut un fichier .pgm de type P2 (binaire)
-// enregistrement photoshop 8bit + export Gimp pgm ASCII  
-Image* pgm = new Image();
-Node* quadTree = new Node();
-
-
+/* ====================== VARIABLES ===================== */
 
 #define VITESSE_DEPLACEMENT 1.0
 #define VITESSE_ROTATION 0.1
 
-double angle=0.0, pos_x=0.0, pos_y = 3.0, pos_z=0.0, x_vise=1.0, z_vise=0.0; 
+// dclaration de l'image et du quadTree
+Image* pgm = new Image();
+Node* quadTree = new Node();
 
+// vue des triangles
 bool isFilled = true;
 
-/* ====================================================== */
-
-/* variables globales pour la gestion de la caméra */
-float profondeur = 10;
-float latitude = 0.0;
-float longitude = M_PI/2.;
-
-float obj_rot = 0.0;
-unsigned int size_pt = 5;
+// Gestion de la caméra
+double angle = 0.0;
+double pos_x = 10.0, pos_y = 10.0, pos_z = 3.0;
+double x_vise = 1.0, z_vise = 0.0; 
 
 
-/* **************** DESSIN A L'ECRAN ******************* */
+/* ================== DESSIN A L'ECRAN ================== */
 
 static void drawFunc(void) { 
-	// réinitialisation des buffers couleur et ZBuffer
+	// réinitialisation des buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// modification de la matrice de la scène
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	// Début du dessin de la scène 
-	glPushMatrix();
+	glPushMatrix();			
 	
-	/* placement de la caméra de biri */
-
-	// ici, latitude = phi, longitude = theta 
-	// gluLookAt(profondeur*sin(longitude)*sin(latitude), profondeur*cos(latitude) + 3,profondeur*cos(longitude)*sin(latitude),
-    //          10.0,0.0,10.0,
-    //          0.0,1.0,0.0);
-
-	// placement de la caméra du mec d'internet
-	// gluLookAt(
-    //     pos_x, 3., pos_z,
-    //     pos_x + , 3., pos,
-    //     0.0, 1.0, 0.0);
-	gluLookAt(
-        pos_x, 3., pos_z,
-			pos_x + profondeur*sin(longitude)*sin(latitude), 
-			pos_y + profondeur*cos(latitude), 
-			pos_z + profondeur*cos(longitude)*sin(latitude),
-        cos(longitude + M_PI/2), 0., sin(longitude + M_PI/2));
-
-	glColor3f(1.0,0.0,0.0);
-	glDrawRepere(5.0);
-
-	glPushMatrix();
-	drawTerrain(quadTree, *pgm, isFilled); 
-
-	//drawTest();
-	//glDisable(GL_LIGHTING);
+		gluLookAt(pos_x, 3., pos_z,
+				  x_vise, 3., z_vise,
+				  0.0, 1.0, 0.0);
+		drawTerrain(quadTree, *pgm, isFilled); 
 
 	glPopMatrix();			// Fin du dessin
+
 	glFinish(); 			// Fin de la définition de la scène 
 	glutSwapBuffers();		// Changement buffer d'affichage
-
 }
 
 
@@ -112,10 +81,7 @@ static void reshapeFunc(int width, int height) {
 /* ================ EVENEMENTS CLAVIER ================= */
 
 static void kbdFunc(unsigned char c, int x, int y) {
-	// ESC, Q ou q : sortie programme
-	// F : changement de la vue
 	// x, y = coordonnées curseur (inutilisé)
-
 	switch(c) {
 		case 27 : case 'Q' : case 'q' :
 			exit(0);
@@ -139,57 +105,31 @@ static void kbdFunc(unsigned char c, int x, int y) {
 static void kbdSpFunc(int c, int x, int y) {
 
 	double dir_x, dir_z;
-	dir_x=x_vise - pos_x;
-	dir_z=z_vise - pos_z;
+	dir_x = x_vise - pos_x;
+	dir_z = z_vise - pos_z;
 
 	switch(c) {
-		// version Biri
-		// case GLUT_KEY_UP :
-		// 	if (latitude>STEP_ANGLE) latitude -= STEP_ANGLE;
-		// 	break;
-		// case GLUT_KEY_DOWN :
-		// 	if(latitude<M_PI-STEP_ANGLE) latitude += STEP_ANGLE;
-		// 	break;
-		// case GLUT_KEY_LEFT :
-		// 	longitude -= STEP_ANGLE;
-		// 	break;
-		// case GLUT_KEY_RIGHT :
-		// 	longitude += STEP_ANGLE;
-		// 	break;
-
-		// Version du mec 
 		case GLUT_KEY_UP:
-		 	if (latitude>STEP_ANGLE) latitude -= STEP_ANGLE;
 			pos_x += dir_x*VITESSE_DEPLACEMENT;
 			pos_z += dir_z*VITESSE_DEPLACEMENT;
 			x_vise += dir_x*VITESSE_DEPLACEMENT;
 			z_vise += dir_z*VITESSE_DEPLACEMENT;
 			break;
 		case GLUT_KEY_DOWN:
-			if(latitude<M_PI-STEP_ANGLE) latitude += STEP_ANGLE;
 			pos_x -= dir_x*VITESSE_DEPLACEMENT;
 			pos_z -= dir_z*VITESSE_DEPLACEMENT;
 			x_vise -= dir_x*VITESSE_DEPLACEMENT;
 			z_vise -= dir_z*VITESSE_DEPLACEMENT;
 			break;
 		case GLUT_KEY_LEFT:
-			longitude -= STEP_ANGLE;
 			angle -= VITESSE_ROTATION;
 			x_vise = pos_x+cos(angle);
 			z_vise = pos_z+sin(angle);
 			break;
 		case GLUT_KEY_RIGHT:
-			longitude += STEP_ANGLE;
-			angle += VITESSE_ROTATION;
+			angle+=VITESSE_ROTATION;
 			x_vise = pos_x+cos(angle);
 			z_vise = pos_z+sin(angle);
-			break;
-
-		case GLUT_KEY_PAGE_UP :
-			profondeur += STEP_PROF;
-			break;
-		case GLUT_KEY_PAGE_DOWN :
-			if (profondeur>0.1+STEP_PROF) profondeur -= STEP_PROF;
 			break;
 		default:
 			printf("Appui sur une touche spéciale\n");
@@ -212,15 +152,8 @@ static void motionFunc(int x, int y) {
 /* ================== INITIALISATION =================== */
 
 static void init() {
-	profondeur = 3;
-	latitude = M_PI/2.0;
-	longitude = 0.0;
-
-	obj_rot = 0.0;
-	size_pt = 10;
-
 	glClearColor(0.4, 0.7, 1. ,0.0);	// Background 
-	glEnable( GL_DEPTH_TEST);			// Z-Buffer
+	glEnable(GL_DEPTH_TEST);			// Z-Buffer
 	glShadeModel(GL_SMOOTH);			// Lissage couleurs
 }
 
@@ -230,7 +163,6 @@ int main(int argc, char** argv) {
 	
 	Config* config = new Config();
 	
-
     config = createConfig(argv[1]);
 	if (config) {
 		cout << "Fichier de configuration " << config->config << " chargé." << endl;
@@ -241,14 +173,14 @@ int main(int argc, char** argv) {
 	}
 
 	// récupération des valeurs du fichier de configuration 
-	char* fichier = config->config;
-    int xSize = config->xsize;
-    int ySize = config->ysize;
-    int zMin = config->zmin;
-    int zMax = config->zmax;
-    int zNear = config->znear;
-    int zFar = config->zfar;
-    int fov = config->fov;
+	//char* fichier = config->config;	// nom de l'image 
+    int xSize = config->xsize;			// largeur du terrain 
+    int ySize = config->ysize;			// profondeur du terrain
+    int zMin = config->zmin;			// hauteur min
+    int zMax = config->zmax;			// hauteur max
+    int zNear = config->znear;			// vue la plus proche 
+    int zFar = config->zfar;			// vue la plus loin 
+    int fov = config->fov;				// champ de vision  
 
 	/* ====================== LOAD MAP ====================== */
 
