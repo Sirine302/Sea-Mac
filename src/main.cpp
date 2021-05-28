@@ -1,5 +1,7 @@
 # include <iostream>
 # include <SDL2/SDL.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 
 # include <GL/gl.h>
 # include <GL/glu.h>
@@ -15,6 +17,9 @@
 # include "visu.h"
 # include "gldrawing.h"
 # include "geometry.h"
+
+// SKYBOX :
+#include "draw.h"
 
 // # include "../include/camera.h"
 
@@ -38,6 +43,39 @@ double angle = 0.0;
 double pos_x = 10.0, pos_y = 10.0, pos_z = 3.0;
 double x_vise = 1.0, z_vise = 0.0; 
 
+//skybox
+GLuint tabTextureId[6];
+
+void glDrawOrigin(float axisLength) 
+{
+    glBegin(GL_LINES);
+        glColor3f(1., 0., 0.);
+        glVertex3f(0., 0., 0.);
+        glVertex3f(axisLength, 0., 0.);
+
+ 		glColor3f(1., 0., 0.);
+        glVertex3f(0., 0., 0.);
+        glVertex3f(-axisLength, 0., 0.);
+
+        glColor3f(0., 1., 0.);
+        glVertex3f(0., 0., 0.);
+        glVertex3f(0., axisLength, 0.);
+
+
+        glColor3f(0., 1., 0.);
+        glVertex3f(0., 0., 0.);
+        glVertex3f(0., -axisLength, 0.);
+
+        glColor3f(0., 0., 1.);
+        glVertex3f(0., 0., 0.);
+        glVertex3f(0., 0., axisLength);
+
+		glColor3f(0., 0., 1.);
+        glVertex3f(0., 0., 0.);
+        glVertex3f(0., 0., -axisLength);
+    glEnd();
+}
+
 
 /* ================== DESSIN A L'ECRAN ================== */
 
@@ -56,9 +94,24 @@ static void drawFunc(void) {
 		drawTerrain(quadTree, *pgm, isFilled, intersection(*champCam, quadTree->surface)); 
 
 	glPopMatrix();			// Fin du dessin
-
 	glFinish(); 			// Fin de la définition de la scène 
 	glutSwapBuffers();		// Changement buffer d'affichage
+	
+	//drawTest();
+	glDisable(GL_LIGHTING);
+	// SKYBOX :
+	glLoadIdentity();
+
+	glPushMatrix();
+    	glDepthMask(GL_FALSE);
+    	//glTranslatef(camera.posCam.x, camera.posCam.y, camera.posCam.z);
+    	drawCenteredBox(10., tabTextureId);
+    	glDepthMask(GL_TRUE);
+    	glPopMatrix();
+
+	glLoadIdentity();
+//////////////////////////////////////////////////////////////////////// fin skybox
+	
 }
 
 
@@ -152,6 +205,29 @@ static void motionFunc(int x, int y) {
 /* ================== INITIALISATION =================== */
 
 static void init() {
+	//////////////////////////////////// SKYBOX
+    char* name[6]={"sky_img/back.jpg",
+		   "sky_img/front.jpg",
+		   "sky_img/left.jpg", 
+		   "sky_img/right.jpg", 
+		   "sky_img/bottom.jpg", 
+		   "sky_img/top.jpg"};
+    for(int i = 0; i<6; i++){
+        tabTextureId[i] = generateTextureJpg(name[i]);
+    }
+	
+	// load support for the JPG and PNG image formats
+    int flags=IMG_INIT_JPG|IMG_INIT_PNG;
+    int initted=IMG_Init(flags);
+    if((initted&flags) != flags) {
+    printf("IMG_Init: Failed to init required jpg and png support!\n");
+    printf("IMG_Init: %s\n", IMG_GetError());
+    // handle error
+}
+
+	//////////////////////////////////////////////// FIN SKYBOX
+	
+	
 	glClearColor(0.4, 0.7, 1. ,0.0);	// Background 
 	glEnable(GL_DEPTH_TEST);			// Z-Buffer
 	glShadeModel(GL_SMOOTH);			// Lissage couleurs
