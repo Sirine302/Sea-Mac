@@ -2,6 +2,8 @@
 #define GEOMETRY_H
 
 # include <math.h>
+# include <iostream>
+using namespace std;
 
 typedef struct Point {
 	float x;
@@ -49,7 +51,7 @@ Square createSquare(int x, int y, int largeur, int hauteur);
 Triangle createTriangle(Point2D position, int zFar, int fov);
 
 // vérifie si le point est dans le square de la node 
-bool pointInSquare(Point point, Square rect);
+bool pointInSquare(Point2D point, Square rect);
 
 // vérifie si le point est dans le triangle de la vue caméra
 // si le point est à droite de tous les côtés, alors il est dans le triangle

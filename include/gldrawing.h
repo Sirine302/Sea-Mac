@@ -9,7 +9,7 @@
 // Fonction de dessin d'un repere. L'axe x est rouge, l'axe y vert et l'axe z bleu.
 void glDrawRepere(float length);
 
-void drawTerrain(Node * node, Image image, bool isFilled);
+void drawTerrain(Node * node, Image image, bool isFilled, bool frustum);
 void drawTriangles(Point NO, Point NE, Point SO, Point SE, bool isFilled) ;
 
 #endif

@@ -28,6 +28,7 @@ using namespace std;
 // dclaration de l'image et du quadTree
 Image* pgm = new Image();
 Node* quadTree = new Node();
+Triangle * champCam = new Triangle();
 
 // vue des triangles
 bool isFilled = true;
@@ -48,12 +49,11 @@ static void drawFunc(void) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glPushMatrix();			
-	
+	glPushMatrix();
 		gluLookAt(pos_x, 3., pos_z,
 				  x_vise, 3., z_vise,
 				  0.0, 1.0, 0.0);
-		drawTerrain(quadTree, *pgm, isFilled); 
+		drawTerrain(quadTree, *pgm, isFilled, intersection(*champCam, quadTree->surface)); 
 
 	glPopMatrix();			// Fin du dessin
 
@@ -127,9 +127,9 @@ static void kbdSpFunc(int c, int x, int y) {
 			z_vise = pos_z+sin(angle);
 			break;
 		case GLUT_KEY_RIGHT:
-			angle+=VITESSE_ROTATION;
-			x_vise = pos_x+cos(angle);
-			z_vise = pos_z+sin(angle);
+			angle += VITESSE_ROTATION;
+			x_vise = pos_x + cos(angle);
+			z_vise = pos_z + sin(angle);
 			break;
 		default:
 			printf("Appui sur une touche spéciale\n");
@@ -203,8 +203,8 @@ int main(int argc, char** argv) {
 
 	/* ======================= CAMERA ======================= */
 
-	// Triangle * champCam = new Triangle();
 	// *champCam = createTriangle({pos_x, pos_y}, zFar, fov);
+	cout << "Triangle initialisé. " << endl;
 
 
     /* ======================= OPENGL ======================= */

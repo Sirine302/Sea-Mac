@@ -42,7 +42,10 @@ void drawTriangles(Point NO, Point NE, Point SO, Point SE, bool isFilled) {
 	glEnd();
 }
 
-void drawTerrain(Node * node, Image image, bool isFilled) {
+void drawTerrain(Node * node, Image image, bool isFilled, bool frustum) {
+	if (frustum) {
+		cout << frustum << " ";
+	}
 	if (isLeaf(node)) {	
 		Point NO = createPoint(	node->surface.x1, 
 								node->surface.y1, 
@@ -71,9 +74,9 @@ void drawTerrain(Node * node, Image image, bool isFilled) {
 		drawTriangles(NO, NE, SO, SE, isFilled);
 	}
 	else {
-		drawTerrain(node->nordOuest, image, isFilled);
-		drawTerrain(node->nordEst, image, isFilled);
-		drawTerrain(node->sudOuest, image, isFilled);
-		drawTerrain(node->sudEst, image, isFilled);
+		drawTerrain(node->nordOuest, image, isFilled, frustum);
+		drawTerrain(node->nordEst, image, isFilled, frustum);
+		drawTerrain(node->sudOuest, image, isFilled, frustum);
+		drawTerrain(node->sudEst, image, isFilled, frustum);
 	}
 }
