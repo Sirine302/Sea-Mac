@@ -29,12 +29,12 @@ void drawTriangles(Point NO, Point NE, Point SO, Point SE, bool isFilled) {
 		float m1 = heightColor(SO.z, NO.z, NE.z, 255);
 		float m2 = heightColor(SO.z, SE.z, NE.z, 255);
 
-		glColor3f(0., m1, 0.);
+		glColor3f(0.2, 0.3, m1);
 		glVertex3f(SO.x, SO.z / 255 * 3, SO.y);
 		glVertex3f(NO.x, NO.z / 255 * 3, NO.y);
 		glVertex3f(NE.x, NE.z / 255 * 3, NE.y);
 
-		glColor3f(0., m2, 0.);
+		glColor3f(0.2, 0.3, m2);
 		glVertex3f(SO.x, SO.z / 255 * 3, SO.y);
 		glVertex3f(SE.x, SE.z / 255 * 3, SE.y);
 		glVertex3f(NE.x, NE.z / 255 * 3, NE.y);

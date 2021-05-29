@@ -6,7 +6,7 @@
 #include <GL/glu.h>
 
 //Dessine un ARBRE :) 
-void drawBillboard(float phi, GLuint texture, Point3D scale);
+// void drawBillboard(float phi, GLuint texture, Point3D scale);
 
 //Dessine la Skybox
 void drawCenteredBox(float length , GLuint* textureSky);

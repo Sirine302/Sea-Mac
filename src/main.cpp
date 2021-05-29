@@ -1,7 +1,7 @@
 # include <iostream>
 # include <SDL2/SDL.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+// #include <SDL/SDL.h>
+// #include <SDL/SDL_image.h>
 
 # include <GL/gl.h>
 # include <GL/glu.h>
@@ -17,6 +17,7 @@
 # include "visu.h"
 # include "gldrawing.h"
 # include "geometry.h"
+# include "textures.h"
 
 // SKYBOX :
 #include "draw.h"
@@ -87,29 +88,33 @@ static void drawFunc(void) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+
+
 	glPushMatrix();
 		gluLookAt(pos_x, 3., pos_z,
 				  x_vise, 3., z_vise,
 				  0.0, 1.0, 0.0);
-		drawTerrain(quadTree, *pgm, isFilled, intersection(*champCam, quadTree->surface)); 
+		glTranslatef(pos_x, 3., pos_z);
+    	glDepthMask(GL_FALSE);
+		drawCenteredBox(5., tabTextureId);
+    	glDepthMask(GL_TRUE);
+	glPopMatrix();
 
+
+	glPushMatrix();
+		gluLookAt(pos_x, 3., pos_z,
+			 	 x_vise, 3., z_vise,
+				 0.0, 1.0, 0.0);
+		drawTerrain(quadTree, *pgm, isFilled, intersection(*champCam, quadTree->surface)); 
 	glPopMatrix();			// Fin du dessin
-	glFinish(); 			// Fin de la définition de la scène 
-	glutSwapBuffers();		// Changement buffer d'affichage
 	
 	//drawTest();
 	glDisable(GL_LIGHTING);
 	// SKYBOX :
-	glLoadIdentity();
 
-	glPushMatrix();
-    	glDepthMask(GL_FALSE);
-    	//glTranslatef(camera.posCam.x, camera.posCam.y, camera.posCam.z);
-    	drawCenteredBox(10., tabTextureId);
-    	glDepthMask(GL_TRUE);
-    	glPopMatrix();
+	glFinish(); 			// Fin de la définition de la scène 
+	glutSwapBuffers();		// Changement buffer d'affichage
 
-	glLoadIdentity();
 //////////////////////////////////////////////////////////////////////// fin skybox
 	
 }
@@ -213,17 +218,8 @@ static void init() {
 		   "sky_img/bottom.jpg", 
 		   "sky_img/top.jpg"};
     for(int i = 0; i<6; i++){
-        tabTextureId[i] = generateTextureJpg(name[i]);
+        tabTextureId[i] = creaTexture(name[i]);
     }
-	
-	// load support for the JPG and PNG image formats
-    int flags=IMG_INIT_JPG|IMG_INIT_PNG;
-    int initted=IMG_Init(flags);
-    if((initted&flags) != flags) {
-    printf("IMG_Init: Failed to init required jpg and png support!\n");
-    printf("IMG_Init: %s\n", IMG_GetError());
-    // handle error
-}
 
 	//////////////////////////////////////////////// FIN SKYBOX
 	
