@@ -1,42 +1,27 @@
-// #include <SDL/SDL.h>
-// #include <SDL/SDL_image.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <string>
-# include <iostream>
+# include "geometry.h"
 #include "draw.h"
 
 
 
-//Dessine un ARBRE :) 
-// void drawBillboard(float phi, GLuint texture, Point3D scale) {
-//             glRotatef(phi*(360/(2*M_PI)),0.,0.,1.);
-//             glScalef(scale.x,scale.y,scale.z);
-//             glEnable(GL_TEXTURE_2D);
-//             glBindTexture(GL_TEXTURE_2D, texture);
-//             glBegin(GL_QUADS);
+//Dessine un ARBRE
+void drawBoat(float angle, GLuint texture, Point position) {
+    
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
-//                 //ColorRGB eclairage = illuminationLambert(createPoint(0.5,0.,0.), createPoint(0.,0.,0.), createPoint(0.,0.5,0.), soleil);
-//                 //glColor3f(eclairage.r,eclairage.g,eclairage.b);
+    glBegin(GL_QUADS);
+        glColor3f(1., 1., 1.);
+        glTexCoord2f(1.,1.); glVertex3f(position.x + 2, 3* position.z/ 255, position.y -2);
+        glTexCoord2f(1.,0.); glVertex3f(position.x + 2, 3* position.z/255 + 4, position.y -2);
+        glTexCoord2f(0.,0.); glVertex3f(position.x - 2, 3* position.z/255 + 4, position.y -2);
+        glTexCoord2f(0.,1.); glVertex3f(position.x- 2, 3* position.z/255, position.y -2);
 
-//                 glTexCoord2f(0.,0.);
-//                 glVertex3f(0.,-0.5,1.);
-
-//                 glTexCoord2f(1.,0.);
-//                 glVertex3f(0.,0.5,1.);
-
-//                 glTexCoord2f(1.,1.);
-//                 glVertex3f(0.,0.5,0.);
-
-//                 glTexCoord2f(0.,1.);
-//                 glVertex3f(0.,-0.5,0.);
-
-//             glEnd();
-//             glBindTexture(GL_TEXTURE_2D, 0);
-//             glDisable(GL_TEXTURE_2D);
-// }
-
-
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+}
 
 
 //Dessine la Skybox
@@ -51,7 +36,7 @@ void drawCenteredBox(float length, GLuint* textureSky) {
     glColor3f(120, 120, 120);
 
 
-   /***** 2 = TOP ******/
+   /* ================ 5 | TOP ================ */
     glBindTexture(GL_TEXTURE_2D, textureSky[5]);
     glBegin(GL_QUADS);
         glTexCoord2f(1.,1.); glVertex3f(-l , l, -l);
@@ -60,7 +45,7 @@ void drawCenteredBox(float length, GLuint* textureSky) {
         glTexCoord2f(0.,1.); glVertex3f(l , l, -l);
     glEnd();
 
-   /***** 4 = FLOOR | OK ******/ 
+   /* ================ 4 | FLOOR ================ */ 
     glBindTexture(GL_TEXTURE_2D, textureSky[4]);
     glBegin(GL_QUADS);
         
@@ -70,19 +55,28 @@ void drawCenteredBox(float length, GLuint* textureSky) {
         glTexCoord2f(1.,1.);glVertex3f(-l , -l, l);
     glEnd();
 
-
-
-   /***** 1 = face 1 ******/
-    glBindTexture(GL_TEXTURE_2D, textureSky[3]);
+    /* ================ 0 | Back ================ */    
+    glBindTexture(GL_TEXTURE_2D, textureSky[0]);
     glBegin(GL_QUADS);
-        glTexCoord2f(1.,1.);  glVertex3f(-l,-l,l);
-        glTexCoord2f(1.,0.); glVertex3f(-l,l,l);
-        glTexCoord2f(0.,0.);glVertex3f(-l,l,-l);
-        glTexCoord2f(0.,1.); glVertex3f(-l,-l,-l);
+        glTexCoord2f(1.,1.); glVertex3f(l , -l, l);
+        glTexCoord2f(1.,0.); glVertex3f(l , l, l);
+        glTexCoord2f(0.,0.); glVertex3f(-l , l, l);
+        glTexCoord2f(0.,1.); glVertex3f(-l , -l, l);
+    glEnd();
+    
+
+    /* ================ 1 | Front ================ */    
+    glBindTexture(GL_TEXTURE_2D, textureSky[1]);
+    glBegin(GL_QUADS);
+        
+        glTexCoord2f(1.,1.); glVertex3f(-l , -l, -l);
+        glTexCoord2f(1.,0.); glVertex3f(-l , l, -l);
+        glTexCoord2f(0.,0.); glVertex3f(l , l, -l);
+        glTexCoord2f(0.,1.); glVertex3f(l , -l, -l);
     glEnd();
 
     
-   /***** 3 = face 2 OK + COHERENTE AU PLAFOND ******/
+   /* ================ 2 | Left ================ */
     glBindTexture(GL_TEXTURE_2D, textureSky[2]);
     glBegin(GL_QUADS);
         glTexCoord2f(1.,1.); glVertex3f(l , -l, -l);
@@ -93,46 +87,15 @@ void drawCenteredBox(float length, GLuint* textureSky) {
 
 
 
-   /***** 5 = face 3 ******/
-    glBindTexture(GL_TEXTURE_2D, textureSky[1]);
+   /* ================ 3 | Right ================ */ 
+    glBindTexture(GL_TEXTURE_2D, textureSky[3]);
     glBegin(GL_QUADS);
-        
-        glTexCoord2f(1.,1.); glVertex3f(-l , -l, -l);
-        glTexCoord2f(1.,0.); glVertex3f(-l , l, -l);
-        glTexCoord2f(0.,0.); glVertex3f(l , l, -l);
-        glTexCoord2f(0.,1.); glVertex3f(l , -l, -l);
+        glTexCoord2f(1.,1.);  glVertex3f(-l,-l,l);
+        glTexCoord2f(1.,0.); glVertex3f(-l,l,l);
+        glTexCoord2f(0.,0.);glVertex3f(-l,l,-l);
+        glTexCoord2f(0.,1.); glVertex3f(-l,-l,-l);
     glEnd();
 
-
-   /***** 6 = face 4 ******/
-    glBindTexture(GL_TEXTURE_2D, textureSky[0]);
-    glBegin(GL_QUADS);
-        glTexCoord2f(1.,1.); glVertex3f(l , -l, l);
-        glTexCoord2f(1.,0.); glVertex3f(l , l, l);
-        glTexCoord2f(0.,0.); glVertex3f(-l , l, l);
-        glTexCoord2f(0.,1.); glVertex3f(-l , -l, l);
-    glEnd();
-    
-
-    // glBindTexture(GL_TEXTURE_2D, 0);
-    // glDisable(GL_TEXTURE_2D);   
-}
-
-
-GLuint generateTextureJpg(char* name){
-    GLuint textureId;
-    
-    SDL_Surface* image = IMG_Load(name);
-    if(!image){
-        printf("%s\n", IMG_GetError());
-    }
-    else{
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
     glBindTexture(GL_TEXTURE_2D, 0);
-     }
-    return textureId;
-
+    glDisable(GL_TEXTURE_2D);   
 }

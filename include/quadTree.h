@@ -17,6 +17,7 @@ typedef struct Node {
     Node* sudOuest;
 
     uint profondeur;
+    Point2D centerNode;
 } QuadTree, Node;
 
 Node * initNode(Node * newNode, Square rect);

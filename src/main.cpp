@@ -1,7 +1,5 @@
 # include <iostream>
 # include <SDL2/SDL.h>
-// #include <SDL/SDL.h>
-// #include <SDL/SDL_image.h>
 
 # include <GL/gl.h>
 # include <GL/glu.h>
@@ -18,17 +16,24 @@
 # include "gldrawing.h"
 # include "geometry.h"
 # include "textures.h"
+#include <chrono>
 
-// SKYBOX :
 #include "draw.h"
 
 // # include "../include/camera.h"
+
+#define STEP_ANGLE M_PI/90.
+#define STEP_PROF  0.05
+
+float latitude = 0.;
+float longitude = M_PI/2.;
+float angle = M_PI/2.;
 
 using namespace std;
 
 /* ====================== VARIABLES ===================== */
 
-#define VITESSE_DEPLACEMENT 1.0
+#define VITESSE_DEPLACEMENT 10.0
 #define VITESSE_ROTATION 0.1
 
 // dclaration de l'image et du quadTree
@@ -40,82 +45,67 @@ Triangle * champCam = new Triangle();
 bool isFilled = true;
 
 // Gestion de la caméra
-double angle = 0.0;
-double pos_x = 10.0, pos_y = 10.0, pos_z = 3.0;
+double pos_x = 1.0, pos_y = 1.0, pos_z = 5.0;
 double x_vise = 1.0, z_vise = 0.0; 
 
 //skybox
 GLuint tabTextureId[6];
 
-void glDrawOrigin(float axisLength) 
-{
-    glBegin(GL_LINES);
-        glColor3f(1., 0., 0.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(axisLength, 0., 0.);
+// bateaux 
+const int maxBoat = 15;
+GLuint tabBoat[maxBoat]; 
+Point * posBoat = (Point *)malloc(sizeof(Point)*maxBoat);
 
- 		glColor3f(1., 0., 0.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(-axisLength, 0., 0.);
-
-        glColor3f(0., 1., 0.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., axisLength, 0.);
-
-
-        glColor3f(0., 1., 0.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., -axisLength, 0.);
-
-        glColor3f(0., 0., 1.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., 0., axisLength);
-
-		glColor3f(0., 0., 1.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., 0., -axisLength);
-    glEnd();
-}
-
+float timerr = SDL_GetPerformanceCounter();
 
 /* ================== DESSIN A L'ECRAN ================== */
 
 static void drawFunc(void) { 
-	// réinitialisation des buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	Vector pVise = createPoint(	pos_x + cos(latitude) * sin(longitude), 
+								pos_y + sin(latitude) * sin(longitude), 
+								pos_z+cos(longitude));
 
-	// modification de la matrice de la scène
+	Vector vise = createPoint(	cos(latitude) * sin(longitude),
+								sin(latitude) * sin(longitude),
+								cos(longitude));
+	
+	Vector vectL = createPoint(	cos(latitude + angle),
+								sin(latitude + angle),
+								0.);
+
+	Vector vectUp = produitVect(vise,vectL);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-
-
 	glPushMatrix();
-		gluLookAt(pos_x, 3., pos_z,
-				  x_vise, 3., z_vise,
-				  0.0, 1.0, 0.0);
-		glTranslatef(pos_x, 3., pos_z);
-    	glDepthMask(GL_FALSE);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHT0);
+		
+		glDrawRepere(10.0);
+		
+		glDepthMask(GL_FALSE);
 		drawCenteredBox(5., tabTextureId);
-    	glDepthMask(GL_TRUE);
+		glDepthMask(GL_TRUE);
+
+		gluLookAt(	pos_x, pos_z, pos_y, 
+					pVise.x, pVise.z, pVise.y, 
+					vectUp.x, vectUp.z, vectUp.y);
+
+		glTranslatef(- pgm->xMax /2, 0, - pgm->yMax / 2);
+
+		drawTerrain(quadTree, *pgm, isFilled, true, timerr, {pos_x, pos_y}); 
+
+		for (int i = 0; i < maxBoat; i++) {
+			drawBoat(angle, tabBoat[i], posBoat[i]);
+		}
+
 	glPopMatrix();
-
-
-	glPushMatrix();
-		gluLookAt(pos_x, 3., pos_z,
-			 	 x_vise, 3., z_vise,
-				 0.0, 1.0, 0.0);
-		drawTerrain(quadTree, *pgm, isFilled, intersection(*champCam, quadTree->surface)); 
-	glPopMatrix();			// Fin du dessin
 	
-	//drawTest();
-	glDisable(GL_LIGHTING);
-	// SKYBOX :
-
 	glFinish(); 			// Fin de la définition de la scène 
 	glutSwapBuffers();		// Changement buffer d'affichage
-
-//////////////////////////////////////////////////////////////////////// fin skybox
 	
 }
 
@@ -129,7 +119,8 @@ static void reshapeFunc(int width, int height) {
 	glViewport(0, 0, (GLint)width, (GLint)height);	// dimension écran GL
 	glMatrixMode(GL_PROJECTION);					// matrice de projection
 	glLoadIdentity();
-	gluPerspective( 60.0, h, 0.01, 10.0 ); 			// Définition caméra 
+	
+	gluPerspective( 60.0, h, 0.01, 100.0); 			// Définition caméra 
 
 	glMatrixMode(GL_MODELVIEW);						// Retour pile de matrice
 	glLoadIdentity();
@@ -139,7 +130,6 @@ static void reshapeFunc(int width, int height) {
 /* ================ EVENEMENTS CLAVIER ================= */
 
 static void kbdFunc(unsigned char c, int x, int y) {
-	// x, y = coordonnées curseur (inutilisé)
 	switch(c) {
 		case 27 : case 'Q' : case 'q' :
 			exit(0);
@@ -162,32 +152,26 @@ static void kbdFunc(unsigned char c, int x, int y) {
 
 static void kbdSpFunc(int c, int x, int y) {
 
-	double dir_x, dir_z;
-	dir_x = x_vise - pos_x;
-	dir_z = z_vise - pos_z;
-
 	switch(c) {
-		case GLUT_KEY_UP:
-			pos_x += dir_x*VITESSE_DEPLACEMENT;
-			pos_z += dir_z*VITESSE_DEPLACEMENT;
-			x_vise += dir_x*VITESSE_DEPLACEMENT;
-			z_vise += dir_z*VITESSE_DEPLACEMENT;
+		case GLUT_KEY_UP :
+			pos_x += STEP_PROF * VITESSE_DEPLACEMENT;
 			break;
-		case GLUT_KEY_DOWN:
-			pos_x -= dir_x*VITESSE_DEPLACEMENT;
-			pos_z -= dir_z*VITESSE_DEPLACEMENT;
-			x_vise -= dir_x*VITESSE_DEPLACEMENT;
-			z_vise -= dir_z*VITESSE_DEPLACEMENT;
+		case GLUT_KEY_DOWN :
+			pos_x -= STEP_PROF * VITESSE_DEPLACEMENT;
 			break;
-		case GLUT_KEY_LEFT:
-			angle -= VITESSE_ROTATION;
-			x_vise = pos_x+cos(angle);
-			z_vise = pos_z+sin(angle);
+		case GLUT_KEY_LEFT :
+			pos_y -= STEP_PROF * VITESSE_DEPLACEMENT;
+
 			break;
-		case GLUT_KEY_RIGHT:
-			angle += VITESSE_ROTATION;
-			x_vise = pos_x + cos(angle);
-			z_vise = pos_z + sin(angle);
+
+		case GLUT_KEY_RIGHT :
+			pos_y += STEP_PROF * VITESSE_DEPLACEMENT;
+			break;
+		case GLUT_KEY_PAGE_UP :
+			pos_z += STEP_PROF * VITESSE_DEPLACEMENT;
+			break;
+		case GLUT_KEY_PAGE_DOWN :
+			pos_z -= STEP_PROF * VITESSE_DEPLACEMENT;
 			break;
 		default:
 			printf("Appui sur une touche spéciale\n");
@@ -195,22 +179,12 @@ static void kbdSpFunc(int c, int x, int y) {
 	glutPostRedisplay();
 }
 
-
-/* ============== EVENEMENTS CLIC SOURIS =============== */
-
-static void mouseFunc(int button, int state, int x, int y) { 
-}
-
-/* ================ DEPLACEMENT SOURIS ================= */
-
-static void motionFunc(int x, int y) { 
-}
-
-
 /* ================== INITIALISATION =================== */
 
 static void init() {
-	//////////////////////////////////// SKYBOX
+
+	/* ===== Skybox ===== */ 
+
     char* name[6]={"sky_img/back.jpg",
 		   "sky_img/front.jpg",
 		   "sky_img/left.jpg", 
@@ -219,14 +193,28 @@ static void init() {
 		   "sky_img/top.jpg"};
     for(int i = 0; i<6; i++){
         tabTextureId[i] = creaTexture(name[i]);
-    }
+    }	
 
-	//////////////////////////////////////////////// FIN SKYBOX
+	/* ===== Bateaux ===== */
 	
+	char* boat = "boat.png"; 
+
+	for (int i = 0; i < maxBoat; i++) {
+		int xPos = rand() % pgm->xMax ; 
+		int yPos = rand() % pgm->yMax; 
+		int zPos = findZ(pgm->allZ, xPos, yPos, timerr);
+		posBoat[i] = createPoint(xPos, yPos, zPos);
+		tabBoat[i] = creaTexture(boat);
+	}
 	
 	glClearColor(0.4, 0.7, 1. ,0.0);	// Background 
 	glEnable(GL_DEPTH_TEST);			// Z-Buffer
 	glShadeModel(GL_SMOOTH);			// Lissage couleurs
+}
+
+
+void idle(void) {
+	glutPostRedisplay();
 }
 
 int main(int argc, char** argv) {
@@ -245,11 +233,12 @@ int main(int argc, char** argv) {
 	}
 
 	// récupération des valeurs du fichier de configuration 
-	//char* fichier = config->config;	// nom de l'image 
     int xSize = config->xsize;			// largeur du terrain 
     int ySize = config->ysize;			// profondeur du terrain
     int zMin = config->zmin;			// hauteur min
     int zMax = config->zmax;			// hauteur max
+
+	// c
     int zNear = config->znear;			// vue la plus proche 
     int zFar = config->zfar;			// vue la plus loin 
     int fov = config->fov;				// champ de vision  
@@ -275,7 +264,7 @@ int main(int argc, char** argv) {
 
 	/* ======================= CAMERA ======================= */
 
-	// *champCam = createTriangle({pos_x, pos_y}, zFar, fov);
+	*champCam = createTriangle({pos_x, pos_y}, zFar, fov);
 	cout << "Triangle initialisé. " << endl;
 
 
@@ -284,7 +273,7 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	
 	// initialisation du mode d'affichage
-	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE|GLUT_DEPTH);
 
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(500, 500);
@@ -300,9 +289,9 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(drawFunc);		// Affichage 
 	glutKeyboardFunc(kbdFunc);		// Event clavier 
 	glutSpecialFunc(kbdSpFunc);		// Event clavier (touches spé.)
-	glutMouseFunc(mouseFunc);		// Event souris 
-	glutMotionFunc(motionFunc);		// Event drag souris 
+	glutIdleFunc(idle);				// Animation 
 
 	glutMainLoop();					// Appel des callbacks
+	
 	return 0;
 }

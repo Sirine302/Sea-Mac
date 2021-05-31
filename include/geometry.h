@@ -44,7 +44,7 @@ Vector produitVect(Vector a, Vector b);
 
 // Norme d'un vecteur V
 float norm(Vect2D v);
-
+float distBetweenPoints(Point2D p1, Point2D p2);
 Square createSquare(int x, int y, int largeur, int hauteur);
 
 // créer un triangle (calculs à vérifier, j'ai probablement écrit n'importe quoi)

@@ -29,7 +29,7 @@ typedef struct Image {
 }Image;
 
 Image* loadImage(Config config); 
-float findZ(int ** array, int x, int y);
+float findZ(int ** array, int x, int y, float timerr);
 float heightColor(float a, float b, float c, int zMax);
 
 #endif // HEIGHT_MAP_H

@@ -40,6 +40,10 @@ Vect2D createVectorFromPoints(Point2D p1, Point2D p2){
 
 /* ====== OPERATIONS SUR POINTS & VECTEURS ====== */ 
 
+float distBetweenPoints(Point2D p1, Point2D p2) {
+    return sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y));
+}
+
 // addition de vecteurs 
 Vect2D VectPlusVect(Vect2D p, Vect2D v){
     Vect2D newPoint;
@@ -104,11 +108,6 @@ Square createSquare(int x1, int x2, int y1, int y2) {
 // créer un triangle (calculs à vérifier, j'ai probablement écrit n'importe quoi)
 Triangle createTriangle(Point2D positionCam, int zFar, int fov) {
     Triangle tri;
-    
-    positionCam.x = 0;
-    positionCam.y = 0;
-    zFar = 3;
-    fov = 100;
 
     Vect2D lToZfar = create2D(positionCam.x, zFar + positionCam.y);
     Vect2D normDistZfar = normalize(lToZfar);
@@ -123,12 +122,13 @@ Triangle createTriangle(Point2D positionCam, int zFar, int fov) {
     Point2D proj2 = create2D(x2,y2);
     
     float longueurH = norm(lToZfar) / cos(fov/2);
-    cout << longueurH << endl;
     
     tri.p1 = positionCam;
     tri.p2 = multVector(proj, longueurH);
     tri.p3 = multVector(proj2, longueurH);
-    cout << "duh" << endl;
+    cout << tri.p1.x << " " << tri.p1.y << endl; 
+    cout << tri.p2.x << " " << tri.p2.y << endl;
+    cout << tri.p3.x << " " << tri.p3.y << endl;
     return tri;
 }
 

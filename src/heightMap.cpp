@@ -1,6 +1,9 @@
 // HeightMap.cpp
-
+#include <ctime>
+#include <math.h>
+#include <SDL2/SDL.h>
 #include "heightMap.h"
+#include <chrono>
 
 // créer createHeightmap 
 Image* loadImage(Config config) {
@@ -51,9 +54,10 @@ Image* loadImage(Config config) {
 	return image;
 }
 
-float findZ(int ** array, int x, int y) {
-    return array[x][y];
+float findZ(int ** array, int x, int y, float timerr) {
+	return array[x][y];
 }
+
 float heightColor(float a, float b, float c, int zMax) {
 	return (a+b+c)/(3*zMax);
 }

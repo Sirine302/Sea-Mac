@@ -23,6 +23,8 @@ Node * initNode(Node * newNode, Square rect) {
         newNode->nordEst = new Node();
         newNode->sudOuest = new Node();
         newNode->sudEst = new Node();
+        
+        newNode->centerNode = create2D(x,y);
 
         Square rectNO = createSquare(x1, x, y1, y);
         Square rectNE = createSquare(x, x2, y1, y);

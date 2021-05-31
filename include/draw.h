@@ -4,11 +4,14 @@
 //linux
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <string>
+# include <iostream>
 
-//Dessine un ARBRE :) 
-// void drawBillboard(float phi, GLuint texture, Point3D scale);
-
-//Dessine la Skybox
+// Bateau 
+void drawBoat(float angle, GLuint texture, Point position);
+// Skybox
 void drawCenteredBox(float length , GLuint* textureSky);
 
 GLuint generateTextureJpg(char* name);
