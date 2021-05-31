@@ -1,4 +1,4 @@
- #include "../include/textures.h"
+ #include "textures.h"
  
  GLuint creaTexture(char* path){
     SDL_Surface* image = IMG_Load(path);

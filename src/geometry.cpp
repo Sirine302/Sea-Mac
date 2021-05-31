@@ -126,9 +126,7 @@ Triangle createTriangle(Point2D positionCam, int zFar, int fov) {
     tri.p1 = positionCam;
     tri.p2 = multVector(proj, longueurH);
     tri.p3 = multVector(proj2, longueurH);
-    cout << tri.p1.x << " " << tri.p1.y << endl; 
-    cout << tri.p2.x << " " << tri.p2.y << endl;
-    cout << tri.p3.x << " " << tri.p3.y << endl;
+
     return tri;
 }
 
@@ -181,19 +179,3 @@ bool intersection(Triangle tri, Square rect) {
         return false;
     }
 }
-
-
-/* 
-FRUSTUM CULLING 
-
-Déterminer quels sont les carrés dans le champ de la caméra 
-
-3 CAS :
-    - le triangle représentant le champ de la cam est dans le carré de la node O 
-    - le carré de la node est entièrement dans le champ de la cam
-    - une partie seulement du carré est traversé par la cam
-
-    - tester ces trois cas dans une fonction 
-        - renvoie true si le cas est dans le champ 
-        - sinon renvoie false
-*/ 

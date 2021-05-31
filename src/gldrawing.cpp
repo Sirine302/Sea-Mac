@@ -1,39 +1,18 @@
-#include "gldrawing.h"
+# include "gldrawing.h"
 
-#include <stdio.h>
 
-void glDrawRepere(float length) {
-	glBegin(GL_LINES);
-		glColor3f(1.,0.,0.);
-		glVertex3f(0.,0.,0.);
-		glVertex3f(length,0.,0.);
-		
-		glColor3f(0.,1.,0.);
-		glVertex3i(0.,0.,0.);
-		glVertex3i(0.,length,0.);
-		
-		glColor3f(0.,0.,1.);
-		glVertex3i(0.,0.,0.);
-		glVertex3i(0.,0.,length);
-	glEnd();
-}
-void drawCam(Triangle tri) {
-	glBegin(GL_TRIANGLE_STRIP);
-		glColor3f(1., 0., 0.);
-		glVertex3f(tri.p1.x, 3., tri.p1.y);
-		glVertex3f(tri.p2.x, 3., tri.p2.y);
-		glVertex3f(tri.p3.x, 3., tri.p3.y);
-	glEnd();
-}
-
+// Dessine les triangles d'une node 
 void drawTriangles(Point NO, Point NE, Point SO, Point SE, bool isFilled) {
-	glEnable(GL_DEPTH_TEST);	
+	
+	glEnable(GL_DEPTH_TEST);
+
 	if (isFilled) {
 		glBegin(GL_TRIANGLE_STRIP);
 	}
 	else {
 		glBegin(GL_LINE_STRIP);
 	}
+
 		float m1 = heightColor(SO.z, NO.z, NE.z, 255);
 		float m2 = heightColor(SO.z, SE.z, NE.z, 255);
 
@@ -50,6 +29,7 @@ void drawTriangles(Point NO, Point NE, Point SO, Point SE, bool isFilled) {
 	glEnd();
 }
 
+// Dessine le terrain 
 void drawTerrain(Node * node, Image image, bool isFilled, bool frustum, float time, Point2D posCam) {
 
 	if ((isLeaf(node) && frustum)) {	
@@ -85,4 +65,114 @@ void drawTerrain(Node * node, Image image, bool isFilled, bool frustum, float ti
 		drawTerrain(node->sudOuest, image, isFilled, frustum, time, posCam);
 		drawTerrain(node->sudEst, image, isFilled, frustum, time, posCam);
 	}
+}
+
+
+// Dessine un bateau
+void drawBoat(float angle, GLuint texture, Point position) {
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glPushMatrix();
+		// glRotatef(angle/M_PI*180, 1., 0., 0.);      // tentative de rotation 
+		
+		glBegin(GL_QUADS);
+			glColor3f(1., 1., 1.);
+
+			glTexCoord2f(1.,1.); 
+			glVertex3f(position.x + 2, 3* position.z/ 255, position.y -2);
+			
+			glTexCoord2f(1.,0.); 
+			glVertex3f(position.x + 2, 3* position.z/255 + 4, position.y -2);
+			
+			glTexCoord2f(0.,0.); 
+			glVertex3f(position.x - 2, 3* position.z/255 + 4, position.y -2);
+			
+			glTexCoord2f(0.,1.); 
+			glVertex3f(position.x- 2, 3* position.z/255, position.y -2);
+
+		glEnd();
+    glPopMatrix();
+	
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+}
+
+
+// Dessine la Skybox
+void drawCenteredBox(float length, GLuint* textureSky) {
+
+    float currentColor[4];
+    glGetFloatv(GL_CURRENT_COLOR,currentColor);
+    glEnable(GL_TEXTURE_2D);
+    
+    float l = length/2;
+    glColor3f(120, 120, 120);
+
+
+   /* ================ 5 | TOP ================ */
+    glBindTexture(GL_TEXTURE_2D, textureSky[5]);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1.,1.); glVertex3f(-l , l, -l);
+        glTexCoord2f(1.,0.); glVertex3f(-l , l, l);
+        glTexCoord2f(0.,0.); glVertex3f(l , l, l);
+        glTexCoord2f(0.,1.); glVertex3f(l , l, -l);
+    glEnd();
+
+   /* ================ 4 | FLOOR ================ */ 
+    glBindTexture(GL_TEXTURE_2D, textureSky[4]);
+    glBegin(GL_QUADS);
+        
+        glTexCoord2f(1.,0.); glVertex3f(-l , -l, -l);
+        glTexCoord2f(0.,0.); glVertex3f(l , -l, -l);
+        glTexCoord2f(0.,1.); glVertex3f(l , -l, l);
+        glTexCoord2f(1.,1.);glVertex3f(-l , -l, l);
+    glEnd();
+
+    /* ================ 0 | Back ================ */    
+    glBindTexture(GL_TEXTURE_2D, textureSky[0]);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1.,1.); glVertex3f(l , -l, l);
+        glTexCoord2f(1.,0.); glVertex3f(l , l, l);
+        glTexCoord2f(0.,0.); glVertex3f(-l , l, l);
+        glTexCoord2f(0.,1.); glVertex3f(-l , -l, l);
+    glEnd();
+    
+
+    /* ================ 1 | Front ================ */    
+    glBindTexture(GL_TEXTURE_2D, textureSky[1]);
+    glBegin(GL_QUADS);
+        
+        glTexCoord2f(1.,1.); glVertex3f(-l , -l, -l);
+        glTexCoord2f(1.,0.); glVertex3f(-l , l, -l);
+        glTexCoord2f(0.,0.); glVertex3f(l , l, -l);
+        glTexCoord2f(0.,1.); glVertex3f(l , -l, -l);
+    glEnd();
+
+    
+   /* ================ 2 | Left ================ */
+    glBindTexture(GL_TEXTURE_2D, textureSky[2]);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1.,1.); glVertex3f(l , -l, -l);
+        glTexCoord2f(1.,0.); glVertex3f(l , l, -l);
+        glTexCoord2f(0.,0.); glVertex3f(l , l, l);
+        glTexCoord2f(0.,1.); glVertex3f(l , -l, l);
+    glEnd();
+
+
+
+   /* ================ 3 | Right ================ */ 
+    glBindTexture(GL_TEXTURE_2D, textureSky[3]);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1.,1.);  glVertex3f(-l,-l,l);
+        glTexCoord2f(1.,0.); glVertex3f(-l,l,l);
+        glTexCoord2f(0.,0.);glVertex3f(-l,l,-l);
+        glTexCoord2f(0.,1.); glVertex3f(-l,-l,-l);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);   
 }

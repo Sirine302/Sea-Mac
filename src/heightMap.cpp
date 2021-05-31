@@ -55,7 +55,7 @@ Image* loadImage(Config config) {
 }
 
 float findZ(int ** array, int x, int y, float timerr) {
-	return array[x][y];
+	return array[x][y] + cos(timerr * x)*10;
 }
 
 float heightColor(float a, float b, float c, int zMax) {

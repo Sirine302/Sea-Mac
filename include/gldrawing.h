@@ -2,15 +2,28 @@
 #define GLDRAWING_H
 
 # include <GL/gl.h>
+# include <GL/glu.h>
+# include <SDL2/SDL.h>
+# include <SDL2/SDL_image.h>
+# include <string>
+# include <iostream>
+# include <stdio.h>
+
 # include "heightMap.h"
 # include "quadTree.h"
-# include "visu.h"
 # include "geometry.h"
 
-// Fonction de dessin d'un repere. L'axe x est rouge, l'axe y vert et l'axe z bleu.
-void glDrawRepere(float length);
-void drawCam(Triangle tri);
+// Map 
 void drawTerrain(Node * node, Image image, bool isFilled, bool frustum, float timerr, Point2D posCam);
 void drawTriangles(Point NO, Point NE, Point SO, Point SE, bool isFilled) ;
+
+// Bateau 
+void drawBoat(float angle, GLuint texture, Point position);
+
+// Skybox
+void drawCenteredBox(float length , GLuint* textureSky);
+
+GLuint generateTextureJpg(char* name);
+
 
 #endif

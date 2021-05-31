@@ -1,1 +1,0 @@
-// ici viendront les fonctions actuellement dans le main, mais on verra ça plus tard 
