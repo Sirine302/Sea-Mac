@@ -90,7 +90,7 @@ static void drawFunc(void) {
 		
 		if (vagues) {
 			timerr = SDL_GetPerformanceCounter();
-			SDL_Delay(3);
+			SDL_Delay(10);
 		}
 
 		drawTerrain(quadTree, *pgm, isFilled, true, timerr, {pos_x, pos_y}); 
