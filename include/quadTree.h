@@ -8,14 +8,14 @@
 #include "heightMap.h"
 
 typedef struct Node {    
-    Square surface;     // coordonnées surface
+    Square surface;
 
-    // Nodes enfants 
     Node* nordOuest;
     Node* nordEst; 
     Node* sudEst;
     Node* sudOuest;
 
+    // autres informations 
     uint profondeur;
     Point2D centerNode;
 } QuadTree, Node;

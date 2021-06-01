@@ -10,12 +10,12 @@ OBJ_DIR	= obj
 SRC_FILES 	= $(shell find $(SRC_DIR)/ -type f -name '*.cpp')
 OBJ_FILES 	= $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o, $(SRC_FILES))
 # Nom de l'exécutable 
-EXEC_BIN	= main.out 
+EXEC_BIN	= seamac.out 
 
 all : $(OBJ_FILES)
 
 # Nom de l'exécutable 
-main : $(OBJ_FILES)
+seamac : $(OBJ_FILES)
 	@mkdir -p $(BIN_DIR)/
 	$(CC) -o $(BIN_DIR)/$(EXEC_BIN) $(OBJ_FILES) $(LDFLAGS)
 

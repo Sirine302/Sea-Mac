@@ -25,15 +25,15 @@ using namespace std;
 // paramètres caméra 
 #define STEP_ANGLE 	M_PI/90.
 #define STEP_PROF  	0.05
-#define VITESSE_DEPLACEMENT 10.0
+#define VITESSE_DEPLACEMENT 1.0
 #define VITESSE_ROTATION 1.
 
 float latitude = 0.;
 float longitude = M_PI/2.;
 float angle = M_PI/2.;
 
-double pos_x = 1.0, pos_y = 1.0, pos_z = 5.0;
-
+float pos_x = 1.0, pos_y = 1.0, pos_z = 5.0;
+Vector pVise, vise, vectL, vectUp;
 
 bool isFilled = true;			// vue quadrillage 
 bool vagues = false;		 	// activation des vagues
@@ -47,7 +47,7 @@ Triangle * champCam = new Triangle();
 GLuint tabTextureId[6];			// skybox
 
 // bateaux 
-const int maxBoat = 15;
+const int maxBoat = 30;
 GLuint tabBoat[maxBoat]; 
 Point * posBoat = (Point *)malloc(sizeof(Point)*maxBoat);
 
@@ -56,19 +56,19 @@ Point * posBoat = (Point *)malloc(sizeof(Point)*maxBoat);
 
 static void drawFunc(void) { 
 	
-	Vector pVise = createPoint(	pos_x + cos(latitude) * sin(longitude), 
-								pos_y + sin(latitude) * sin(longitude), 
-								pos_z+cos(longitude));
+	pVise = createPoint(pos_x + cos(latitude) * sin(longitude), 
+						pos_y + sin(latitude) * sin(longitude), 
+						pos_z + cos(longitude));
 
-	Vector vise = createPoint(	cos(latitude) * sin(longitude),
-								sin(latitude) * sin(longitude),
-								cos(longitude));
+	vise = createPoint(	cos(latitude) * sin(longitude),
+						sin(latitude) * sin(longitude),
+						cos(longitude));
 	
-	Vector vectL = createPoint(	cos(latitude + angle),
-								sin(latitude + angle),
-								0.);
+	vectL = createPoint(cos(latitude + angle),
+						sin(latitude + angle),
+						0.);
 
-	Vector vectUp = produitVect(vise,vectL);
+	vectUp = produitVect(vise,vectL);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -127,6 +127,11 @@ static void reshapeFunc(int width, int height) {
 /* ================ EVENEMENTS CLAVIER ================= */
 
 static void kbdFunc(unsigned char c, int x, int y) {
+
+	double dir_x, dir_y;
+	dir_x = pVise.x - pos_x;
+	dir_y = pVise.y - pos_y;
+
 	switch(c) {
 		// sortie du programme 
 		case 27 :
@@ -155,20 +160,31 @@ static void kbdFunc(unsigned char c, int x, int y) {
 
 		// déplacements 
 		case 'z' : case 'Z' :
-			pos_x += STEP_PROF * VITESSE_DEPLACEMENT;
+			pos_x += dir_x * VITESSE_DEPLACEMENT;
+			pos_y += dir_y * VITESSE_DEPLACEMENT;
+			vise.x += dir_x * VITESSE_DEPLACEMENT;
+			vise.y += dir_y * VITESSE_DEPLACEMENT;
 			break;
+
 		case 'S' : case 's' :
-			pos_x -= STEP_PROF * VITESSE_DEPLACEMENT;
+			pos_x -= dir_x * VITESSE_DEPLACEMENT;
+			pos_z -= dir_y * VITESSE_DEPLACEMENT;
+			vise.x -= dir_x * VITESSE_DEPLACEMENT;
+			vise.y -= dir_y * VITESSE_DEPLACEMENT;
 			break;
+
 		case 'Q' : case 'q' :
-			pos_y -= STEP_PROF * VITESSE_DEPLACEMENT;
+			latitude -= STEP_ANGLE * VITESSE_ROTATION;
+			vise.x = sin(longitude) + pos_x;
+			vise.y = cos(longitude) + pos_y;
 			break;
 
 		case 'D' : case 'd' :
-			pos_y += STEP_PROF * VITESSE_DEPLACEMENT;
+			latitude += STEP_ANGLE * VITESSE_ROTATION;
+			vise.x = sin(longitude) + pos_x;
+			vise.y = cos(longitude) + pos_y;
 			break;
 
-		
 		default:
 			printf("Appui sur la touche %c\n",c);
 	}
@@ -188,16 +204,6 @@ static void kbdSpFunc(int c, int x, int y) {
 		case GLUT_KEY_DOWN :
 			pos_z -= STEP_PROF * VITESSE_DEPLACEMENT;
 			break;
-
-		// tentatives de rotation de la caméra 
-
-		// case GLUT_KEY_LEFT :
-		// 	latitude -= STEP_ANGLE * VITESSE_ROTATION;
-		// 	break;
-
-		// case GLUT_KEY_RIGHT :
-		// 	latitude += STEP_ANGLE * VITESSE_ROTATION;
-		// 	break;
 
 		default:
 			printf("Appui sur une touche spéciale\n");
@@ -260,11 +266,6 @@ int main(int argc, char** argv) {
 	// récupération des valeurs du fichier de configuration 
     int xSize = config->xsize;			// largeur du terrain 
     int ySize = config->ysize;			// profondeur du terrain
-    int zMin = config->zmin;			// hauteur min
-    int zMax = config->zmax;			// hauteur max
-
-	// c
-    int zNear = config->znear;			// vue la plus proche 
     int zFar = config->zfar;			// vue la plus loin 
     int fov = config->fov;				// champ de vision  
 
@@ -301,9 +302,9 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE|GLUT_DEPTH);
 
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(1000, 800);
 
-	if (glutCreateWindow("VisuTerrIMAC | Sirine & Audrey") == GL_FALSE) {
+	if (glutCreateWindow("Sea'MAC | Sirine & Audrey") == GL_FALSE) {
 		return 1;
 	}
 
